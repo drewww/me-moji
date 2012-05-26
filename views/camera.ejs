@@ -34,8 +34,7 @@
 			onSave: function(data) {
 				var col = data.split(";");
 				var img = image;
-				for(var i = 0; i < 320; i++) {
-					
+				for(var i = 40; i < 280; i++) {
 					// first check and see if we're within the circle.
 					// if we aren't, set it to white + full alpha
 					
@@ -57,7 +56,7 @@
 					pos+= 4;
 				}
 
-				if (pos >= 4 * 320 * 240) {
+				if (pos >= 4 * 240 * 240) {
 					ctx.putImageData(img, 0, 0);
 					console.log("uploading done: " + new Date().getTime())
 					$.post("/camera/", {image: canvas.toDataURL("image/png")}, function(data) {
@@ -76,11 +75,11 @@
 				});
 
 				canvas = document.createElement("canvas");
-				canvas.setAttribute('width', 320);
+				canvas.setAttribute('width', 240);
 				canvas.setAttribute('height', 240);
 
 				ctx = canvas.getContext("2d");
-				image = ctx.getImageData(0, 0, 320, 240);
+				image = ctx.getImageData(0, 0, 240, 240);
 				rowCount = 0;
 				console.log("called save " + new Date().getTime());
 				webcam.save();
