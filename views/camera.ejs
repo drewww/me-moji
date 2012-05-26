@@ -12,6 +12,7 @@
 		$(document).ready(function() {
 			console.log("ready!");
 			
+			$("#countdown span").hide();
 			
 			$("#camera").webcam({
 				width: 320,
@@ -26,12 +27,72 @@
 					console.log("load");
 				}
 			});
+			
+			$("#capture").click(function() {
+				
+				// show the countdown spans
+				$("#countdown span").show(250);
+				
+				window.webcam.capture(3);
+			});
+			
 		});
 	</script>
+	
+	<style type="text/css" media="screen">
+		
+		body {
+			margin: 0px;
+			font-family: Helvetica;
+		}
+		
+		#camera {
+			
+		}
+		
+		#countdown {
+			width: 100%;
+			background-color: red;
+			padding: 10px;
+			text-align: center;
+		}
+		
+		#countdown span {
+			color: white;
+			font-size: 2em;
+			font-weight: bold;
+			margin-right: 10px;
+		}
+		
+		#capture {
+			background-color: #fff;
+			font-size: 2em;
+			width: 50px;
+			height: 50px;
+			border-radius: 25px;
+			
+			opacity: 0.7;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		.clear {
+			clear: both;
+		}
+
+	</style>
 </head>
 <body id="index" onload="">
 
 <div id="camera"></div>
+<div id="countdown">
+<span id="three">3</span>
+<span id="two">2</span>
+<span id="one">1</span>
+<div id="capture">C</div>
+<br class="clear">
+</div>
+
 
 </body>
 </html>
