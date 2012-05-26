@@ -6,110 +6,154 @@
 	<script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
 	</script>
 	<script type="text/javascript" src="/static/js/lib/jscam/jquery.webcam.js"></script>
-	
+
 	<script type="text/javascript" charset="utf-8">
-		
-		var countdown = 2;
-		
-		$(document).ready(function() {
-			console.log("ready!");
-			
-			$("#countdown span").hide();
-			
-			$("#camera").webcam({
-				width: 320,
-				height: 240,
-				mode: "callback",
-				swffile: "/static/js/lib/jscam/jscam.swf",
-				onTick: function() {
-					console.log("tick!");
-					highlight(countdown);
-					countdown--;
-				},
-		        onSave: function() {
-					console.log("save");
-				},
-		        onCapture: function() {
-					$("#countdown span").hide();
-				},
-		        debug: function(type, string) {console.log("debug: " + type + "; " + string);},
-				onLoad: function() {
-					console.log("load");
+
+	var countdown = 2;
+
+	var canvas;
+	var pos = 0, ctx = null, image = [];
+
+	$(document).ready(function() {
+		console.log("ready!");
+
+		$("#countdown span").hide();
+
+		$("#camera").webcam({
+			width: 320,
+			height: 240,
+			mode: "callback",
+			swffile: "/static/js/lib/jscam/jscam.swf",
+			onTick: function() {
+				console.log("tick!");
+				highlight(countdown);
+				countdown--;
+			},
+			onSave: function(data) {
+				var col = data.split(";");
+				var img = image;
+				for(var i = 0; i < 320; i++) {
+					var tmp = parseInt(col[i]);
+					img.data[pos + 0] = (tmp >> 16) & 0xff;
+					img.data[pos + 1] = (tmp >> 8) & 0xff;
+					img.data[pos + 2] = tmp & 0xff;
+					img.data[pos + 3] = 0xff;
+					pos+= 4;
 				}
-			});
-			
-			$("#capture").click(function() {
-				// show the countdown spans
-				$("#countdown span").show(250, function() {
-					highlight(3);
-					window.webcam.capture(2);
-					countdown = 2;
+
+				if (pos >= 4 * 320 * 240) {
+					ctx.putImageData(img, 0, 0);
+					console.log("uploading done: " + new Date().getTime())
+					$.post("/upload/", {type: "data", image: canvas.toDataURL("image/png")});
+					pos = 0;
+				}
+
+			},
+			onCapture: function() {
+
+				jQuery("#flash").css("display", "block");
+				jQuery("#flash").fadeOut("fast", function () {
+					jQuery("#flash").css("opacity", 1);
 				});
-			});
-			
+
+				canvas = document.createElement("canvas");
+				canvas.setAttribute('width', 320);
+				canvas.setAttribute('height', 240);
+
+				ctx = canvas.getContext("2d");
+				image = ctx.getImageData(0, 0, 320, 240);
+				console.log("called save " + new Date().getTime());
+				webcam.save();
+			},
+			debug: function(type, string) {console.log("debug: " + type + "; " + string);},
+			onLoad: function() {
+				console.log("load");
+			}
 		});
-		
-		function highlight(num) {
-			$("#countdown span").css("opacity", 0.5);
-			$("#count" + num).css("opacity", 1.0);
-		}
-		
+
+		$("#capture").click(function() {
+			// show the countdown spans
+			$("#countdown span").show(250, function() {
+				highlight(3);
+				window.webcam.capture(2);
+				countdown = 2;
+			});
+		});
+
+	});
+
+	function highlight(num) {
+		$("#countdown span").css("opacity", 0.5);
+		$("#count" + num).css("opacity", 1.0);
+	}
+
 	</script>
-	
+
 	<style type="text/css" media="screen">
-		
-		body {
-			margin: 0px;
-			font-family: Helvetica;
-		}
-		
-		#camera {
-			
-		}
-		
-		#countdown {
-			width: 100%;
-			background-color: red;
-			padding: 10px;
-			text-align: center;
-		}
-		
-		#countdown span {
-			color: white;
-			font-size: 2em;
-			font-weight: bold;
-			margin-right: 10px;
-			opacity: 0.5;
-		}
-		
-		#capture {
-			background-color: #fff;
-			font-size: 2em;
-			width: 50px;
-			height: 50px;
-			border-radius: 25px;
-			
-			opacity: 0.7;
-			margin-left: auto;
-			margin-right: auto;
-		}
-		
-		.clear {
-			clear: both;
-		}
+
+	body {
+		margin: 0px;
+		font-family: Helvetica;
+	}
+
+	#camera {
+
+	}
+
+	#countdown {
+		width: 100%;
+		background-color: red;
+		padding: 10px;
+		text-align: center;
+	}
+
+	#countdown span {
+		color: white;
+		font-size: 2em;
+		font-weight: bold;
+		margin-right: 10px;
+		opacity: 0.5;
+	}
+
+	#capture {
+		background-color: #fff;
+		font-size: 2em;
+		width: 50px;
+		height: 50px;
+		border-radius: 25px;
+
+		opacity: 0.7;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	#flash {
+		position:fixed;
+		top:0px;
+		left:0px;
+		z-index:5000;
+		width:100%;
+		height:100%;
+		background-color:#c00;
+		display:none;
+	}
+
+	.clear {
+		clear: both;
+	}
 
 	</style>
 </head>
 <body id="index" onload="">
-
-<div id="camera"></div>
-<div id="countdown">
-<span id="count3">3</span>
-<span id="count2">2</span>
-<span id="count1">1</span>
-<div id="capture">C</div>
-<br class="clear">
-</div>
+	<div id="flash"></div>
+	<div id="camera"></div>
+	<div id="countdown">
+		<span id="count3">3</span>
+		<span id="count2">2</span>
+		<span id="count1">1</span>
+		<div id="capture">C</div>
+		<br class="clear">
+	</div>
 
 
 </body>
