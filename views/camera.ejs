@@ -9,6 +9,8 @@
 	
 	<script type="text/javascript" charset="utf-8">
 		
+		var countdown = 2;
+		
 		$(document).ready(function() {
 			console.log("ready!");
 			
@@ -19,9 +21,17 @@
 				height: 240,
 				mode: "callback",
 				swffile: "/static/js/lib/jscam/jscam.swf",
-				onTick: function() {console.log("tick");},
-		        onSave: function() {console.log("save");},
-		        onCapture: function() {console.log("capture");},
+				onTick: function() {
+					console.log("tick!");
+					highlight(countdown);
+					countdown--;
+				},
+		        onSave: function() {
+					console.log("save");
+				},
+		        onCapture: function() {
+					$("#countdown span").hide();
+				},
 		        debug: function(type, string) {console.log("debug: " + type + "; " + string);},
 				onLoad: function() {
 					console.log("load");
@@ -29,14 +39,21 @@
 			});
 			
 			$("#capture").click(function() {
-				
 				// show the countdown spans
-				$("#countdown span").show(250);
-				
-				window.webcam.capture(3);
+				$("#countdown span").show(250, function() {
+					highlight(3);
+					window.webcam.capture(2);
+					countdown = 2;
+				});
 			});
 			
 		});
+		
+		function highlight(num) {
+			$("#countdown span").css("opacity", 0.5);
+			$("#count" + num).css("opacity", 1.0);
+		}
+		
 	</script>
 	
 	<style type="text/css" media="screen">
@@ -62,6 +79,7 @@
 			font-size: 2em;
 			font-weight: bold;
 			margin-right: 10px;
+			opacity: 0.5;
 		}
 		
 		#capture {
@@ -86,9 +104,9 @@
 
 <div id="camera"></div>
 <div id="countdown">
-<span id="three">3</span>
-<span id="two">2</span>
-<span id="one">1</span>
+<span id="count3">3</span>
+<span id="count2">2</span>
+<span id="count1">1</span>
 <div id="capture">C</div>
 <br class="clear">
 </div>
