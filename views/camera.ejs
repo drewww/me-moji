@@ -19,10 +19,19 @@
 
 	$(document).ready(function() {
 		console.log("ready!");
+		
+		$("#select").click(function() {
+			upload(image);
+			setMode("CAMERA");
+		});
+		
+		$("#reject").click(function() {
+			setMode("CAMERA");
+		});
+		
+		setMode("CAMERA");
 
-		$("#countdown span").hide();
-
-		$("#camera").webcam({
+		$("#video").webcam({
 			width: 320,
 			height: 240,
 			mode: "callback",
@@ -59,31 +68,28 @@
 
 				if (pos >= 4 * 240 * 240) {
 					ctx.putImageData(img, 0, 0);
-					console.log("uploading done: " + new Date().getTime())
-					$.post("/camera/", {image: canvas.toDataURL("image/png"),
-					"emojiId":emojiId}, function(data) {
-						console.log("server response: " + data);
-					});
 					pos = 0;
+					
+					// be done!
+					return;
 				}
 				
 				rowCount++;
 			},
 			onCapture: function() {
-
 				jQuery("#flash").css("display", "block");
 				jQuery("#flash").fadeOut("fast", function () {
 					jQuery("#flash").css("opacity", 1);
 				});
-
-				canvas = document.createElement("canvas");
+				console.log("IN ON CAPTURE");
+				canvas = document.getElementById("image");
 				canvas.setAttribute('width', 240);
 				canvas.setAttribute('height', 240);
-
 				ctx = canvas.getContext("2d");
 				image = ctx.getImageData(0, 0, 240, 240);
 				rowCount = 0;
-				console.log("called save " + new Date().getTime());
+				
+				setMode("REVIEW");
 				webcam.save();
 			},
 			debug: function(type, string) {console.log("debug: " + type + "; " + string);},
@@ -94,18 +100,59 @@
 
 		$("#capture").click(function() {
 			// show the countdown spans
-			$("#countdown span").show(250, function() {
-				highlight(3);
-				window.webcam.capture(2);
-				countdown = 2;
-			});
+			setMode("COUNTDOWN");
+			window.webcam.capture(2);
+			highlight(3);
+			countdown = 2;
 		});
 
 	});
-
+	
+	function upload(image) {
+		$.post("/camera/", {"image": canvas.toDataURL("image/png"),
+		"emojiId":emojiId}, function(data) {
+			console.log("server response: " + data);
+		});
+	}
+	
 	function highlight(num) {
 		$("#countdown span").css("opacity", 0.5);
 		$("#count" + num).css("opacity", 1.0);
+	}
+
+	function setMode(mode) {
+		
+		console.log("SETTING MODE: "  + mode);
+		
+		switch(mode) {
+			case "CAMERA":
+				// show #video
+				$("#image").hide();
+				$("#image-background").hide();
+				
+				
+				$("#camera").show();
+				$("#countdown").hide();
+				$("#review").hide();
+				break;
+			case "COUNTDOWN":
+				// show #video
+				$("#image").hide();
+				$("#image-background").hide();
+
+				$("#camera").hide();
+				$("#countdown").show();
+				$("#review").hide();
+				break;
+			case "REVIEW":
+				$("#image").show();
+				$("#image-background").show();
+
+				$("#camera").hide();
+				$("#countdown").hide();
+				$("#review").show();
+				break;
+		}
 	}
 
 	</script>
@@ -121,14 +168,14 @@
 
 	}
 
-	#countdown {
+	#status {
 		width: 100%;
 		background-color: red;
 		padding: 10px;
 		text-align: center;
 	}
 
-	#countdown span {
+	#status span {
 		color: white;
 		font-size: 2em;
 		font-weight: bold;
@@ -159,20 +206,74 @@
 		display:none;
 	}
 
+	#select, #reject {
+		float: left;
+		font-weight: 2em;
+		color: white;
+	}
+
 	.clear {
 		clear: both;
+	}
+	
+	#camera-container {
+		position: relative;
+		
+		margin-top: 20px;
+		margin-bottom: 20px;
+		margin-left: auto;
+		margin-right: auto;
+		width: 320px;
+		height: 240px;
+	}
+	
+	#image {
+		position: absolute;
+		width: 240px;
+		height: 240px;
+		
+		top: 0px;
+		left: 40px;
+		
+		z-index: 50;
+	}
+	
+	#image-background {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		
+		background-color: white;
+		width: 100%;
+		height: 100%;
+		z-index: 49;
 	}
 
 	</style>
 </head>
 <body id="index" onload="">
 	<div id="flash"></div>
-	<div id="camera"></div>
-	<div id="countdown">
+	<div id="camera-container">
+		<div id="video"></div>
+		<canvas id="image"></canvas>
+		<div id="image-background"></div>
+	</div>
+	<div id="status">
+		<div id="countdown">
 		<span id="count3">3</span>
 		<span id="count2">2</span>
 		<span id="count1">1</span>
+		</div>
+		
+		<div id="camera">
 		<div id="capture">C</div>
+		</div>
+		
+		<div id="review">
+		<div id="select">SELECT</div>
+		<div id="reject">REJECT</div>
+		</div>
+
 		<br class="clear">
 	</div>
 
