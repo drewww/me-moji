@@ -44,7 +44,9 @@
 				if (pos >= 4 * 320 * 240) {
 					ctx.putImageData(img, 0, 0);
 					console.log("uploading done: " + new Date().getTime())
-					$.post("/upload/", {type: "data", image: canvas.toDataURL("image/png")});
+					$.post("/camera/", {image: canvas.toDataURL("image/png")}, function(data) {
+						console.log("server response: " + data);
+					});
 					pos = 0;
 				}
 

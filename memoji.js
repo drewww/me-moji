@@ -39,6 +39,7 @@ if(program.port) {
 var app = express.createServer();
 
 app.listen(port);
+app.use(express.bodyParser());
 app.use("/static", express.static(__dirname + '/static'));
 
 // Setup the index page.
@@ -46,6 +47,18 @@ app.get('/', function(req, res) {
     res.render('index.ejs', {layout:false});
 });
 
-app.get('/camera', function(req, res) {
+app.get('/camera/', function(req, res) {
     res.render('camera.ejs', {layout:false});
 });
+
+app.post('/camera/', function(req, res) {
+    var imgData = req.param("image");
+    logger.info("Received camera post!");
+    var filename = Date.now() + ".png";
+    fs.writeFile("static/img/photos/" + filename,
+    new Buffer(imgData.match(/,(.+)/)[1],'base64'),
+    function(err) {
+        logger.debug("result from writing image: " + err);
+    });
+});
+
