@@ -48,13 +48,15 @@ app.get('/', function(req, res) {
 });
 
 app.get('/camera/', function(req, res) {
-    res.render('camera.ejs', {layout:false});
+    res.render('camera.ejs', {layout:false,
+        locals:{"emojiId":Math.floor(Math.random()*19)}
+    });
 });
 
 app.post('/camera/', function(req, res) {
     var imgData = req.param("image");
     logger.info("Received camera post!");
-    var filename = Date.now() + ".png";
+    var filename = req.param("emojiId") + "_" + Date.now() + ".png";
     fs.writeFile("static/img/photos/" + filename,
     new Buffer(imgData.match(/,(.+)/)[1],'base64'),
     function(err) {

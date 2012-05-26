@@ -15,6 +15,7 @@
 	var pos = 0, ctx = null, image = [];
 	var rowCount = 0;
 
+	var emojiId = <%=emojiId%>;
 
 	$(document).ready(function() {
 		console.log("ready!");
@@ -59,7 +60,8 @@
 				if (pos >= 4 * 240 * 240) {
 					ctx.putImageData(img, 0, 0);
 					console.log("uploading done: " + new Date().getTime())
-					$.post("/camera/", {image: canvas.toDataURL("image/png")}, function(data) {
+					$.post("/camera/", {image: canvas.toDataURL("image/png"),
+					"emojiId":emojiId}, function(data) {
 						console.log("server response: " + data);
 					});
 					pos = 0;
