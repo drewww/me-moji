@@ -1,0 +1,1 @@
+This folder contains uploaded user pictures. Deleting a picture and restarting the server will cause the server to forget that picture and stop serving it. This is a simple moderation strategy.

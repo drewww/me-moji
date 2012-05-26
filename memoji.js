@@ -36,6 +36,43 @@ if(program.port) {
     port = program.port;
 }
 
+
+// Load up all the files on disk into memory.
+
+var sortedImagesByEmojiId = [];
+
+function loadExistingImages() {
+    // scream through all the files and save
+    // their full urls.
+    logger.info("Loading files...");
+    
+    fs.readdir("static/img/photos/", function(err, files) {
+        for(fileIndex in files) {
+            var file = files[fileIndex];
+            
+            if(file[0]==".") continue;
+            if(file=="README") continue;
+            
+            var parts = file.split("_");
+            
+            var time = parts[0];
+            var emojiId = parseInt(parts[1].split(".")[0]);
+            
+            logger.debug("time: " + time + "; id: "+ emojiId);
+            
+            var list = [];
+            if(emojiId in sortedImagesByEmojiId) {
+                list = sortedImagesByEmojiId[emojiId];
+            }
+            
+            list.push(file);
+            sortedImagesByEmojiId[emojiId] = list;
+        }
+    });
+}
+
+loadExistingImages();
+
 var app = express.createServer();
 
 app.listen(port);
@@ -49,18 +86,29 @@ app.get('/', function(req, res) {
 
 app.get('/camera/', function(req, res) {
     res.render('camera.ejs', {layout:false,
-        locals:{"emojiId":Math.floor(Math.random()*19)}
+        locals:{"emojiId":Math.floor(Math.random()*21)}
     });
 });
 
 app.post('/camera/', function(req, res) {
     var imgData = req.param("image");
+    var emojiId = req.param("emojiId");
+    
     logger.info("Received camera post!");
-    var filename = req.param("emojiId") + "_" + Date.now() + ".png";
+    var filename = Date.now() + "_" + emojiId + ".png";
     fs.writeFile("static/img/photos/" + filename,
     new Buffer(imgData.match(/,(.+)/)[1],'base64'),
     function(err) {
-        logger.debug("result from writing image: " + err);
+        if(err==null) {
+            var list = [];
+            if(emojiId in sortedImagesByEmojiId) {
+                list = sortedImagesByEmojiId[emojiId];
+            }
+            
+            list.push(filename);
+            
+            logger.debug("current emoji list: " + JSON.stringify(sortedImagesByEmojiId));
+        }
     });
 });
 
