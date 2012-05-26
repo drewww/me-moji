@@ -1,0 +1,11 @@
+{
+	"name":"me-moji",
+	"version": "0.1.0",
+	"dependencies":{
+		"commander":"*",
+		"winston":"*",
+		"express":"*",
+		"underscore":"*",
+		"ejs":"*"
+	}
+}
