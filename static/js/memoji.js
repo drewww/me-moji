@@ -10,4 +10,13 @@ $(document).ready(function() {
         console.log("Bring up camera.");
     });
     
+    $("#add-photo").click(function() {
+        showPhotobooth();
+    });
+    
 });
+
+
+function showPhotobooth() {
+    $("#photobooth").animate({height: "400px"});
+}
