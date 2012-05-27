@@ -1,3 +1,6 @@
+
+var photoboothShown = false;
+
 $(document).ready(function() {
     console.log("Hello world!");
     
@@ -14,9 +17,23 @@ $(document).ready(function() {
         showPhotobooth();
     });
     
+    $("#logo").click(function() {
+        if(photoboothShown) {
+            hidePhotobooth();
+        }
+    });
+    
 });
 
 
 function showPhotobooth() {
-    $("#photobooth").animate({height: "400px"});
+    $("#photobooth").animate({height: "400px"}, 500, "linear");
+    
+    photoboothShown = true;
+}
+
+function hidePhotobooth() {
+    $("#photobooth").animate({height: "0px"}, 500, "linear");
+    
+    photoboothShown = true;
 }
