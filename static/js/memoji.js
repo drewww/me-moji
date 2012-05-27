@@ -7,4 +7,8 @@ $(document).ready(function() {
         $(this).addClass("select");
     });
     
+    $("#add-photo").click(function() {
+        console.log("Bring up camera.");
+    });
+    
 });
