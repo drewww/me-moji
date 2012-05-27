@@ -105,7 +105,9 @@ app.post('/camera/', function(req, res) {
                 list = sortedImagesByEmojiId[emojiId];
             }
             
-            list.push(filename);
+            // push on the front.
+            list.unshift(filename);
+            sortedImagesByEmojiId[emojiId] = list;
             
             logger.debug("current emoji list: " + JSON.stringify(sortedImagesByEmojiId));
         }
