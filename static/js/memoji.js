@@ -13,12 +13,9 @@ var emojiId = Math.floor(Math.random()*19);
 $(document).ready(function() {
     console.log("Hello world!");
     
-$("#gutter").children().each(function() {
-        if($(this).attr("src").indexOf("/"+emojiId+".png")!=-1) {
-            $(this).addClass("select");
-        }
-    });
-    updateEmojiForId(emojiId);
+    updateEmojiTabSelect();
+    
+    updateEmojiPhotosForId(emojiId);
     
     $("#photobooth").hide();
     $("#background").hide();
@@ -47,7 +44,12 @@ $("#gutter").children().each(function() {
 		
         $(".emoji").click(emojiTabClick);
         
-        updateEmojiForId(emojiId);
+        emojiId = (emojiId+1);
+        
+        if(emojiId==20) emojiId=1;
+        
+        updateEmojiTabSelect();
+        updateEmojiPhotosForId(emojiId);
 	});
 	
 	$("#reject").click(function() {
@@ -65,6 +67,17 @@ $("#gutter").children().each(function() {
 	});
 });
 
+function updateEmojiTabSelect() {
+    $(".emoji").removeClass("select");
+    $("#gutter").children().each(function() {
+        if($(this).attr("src").indexOf("/"+emojiId+".png")!=-1) {
+            $(this).addClass("select");
+        }
+    });
+    
+    $("#emoji-example").attr("src", "/static/img/emoji/" + emojiId + ".png");
+}
+
 function emojiTabClick() {
     $(".emoji").removeClass("select");
     $(this).addClass("select");
@@ -73,10 +86,10 @@ function emojiTabClick() {
     
     $("#emoji-example").attr("src", "/static/img/emoji/" + emojiId + ".png");
     
-    updateEmojiForId(emojiId);
+    updateEmojiPhotosForId(emojiId);
 }
 
-function updateEmojiForId(newId) {
+function updateEmojiPhotosForId(newId) {
     $.ajax("/emoji/" + newId, {
         dataType: "json",
         success: function(data, textStatus) {
@@ -198,7 +211,7 @@ function hidePhotobooth() {
     $("#emoji-example").hide();
     
     photoboothShown = true;
-    updateEmojiForId(emojiId);
+    updateEmojiPhotosForId(emojiId);
 }
 
 
