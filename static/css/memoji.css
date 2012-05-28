@@ -79,14 +79,18 @@ body {
     width: 160px;
     float: left;
     border-radius: 80px;
+    margin-left: 10px;
+}
+
+#add-photo {
     cursor: pointer;
 }
 
-.circle:hover {
+#add-photo:hover {
     box-shadow: 3px 3px 6px #555;
 }
 
-.circle:active {
+#add-photo:active {
     box-shadow: inset 1px 1px 6px #555;
 }
 
@@ -101,6 +105,7 @@ body {
     opacity: 0.5;
     background-color: black;
 }
+
 
 /****************************************************************************/
 /*                  PHOTOBOOTH STYLES                                       */

@@ -57,12 +57,29 @@ $(document).ready(function() {
 });
 
 function emojiTabClick() {
-        $(".emoji").removeClass("select");
-        $(this).addClass("select");
-        
-        emojiId = parseInt($(this).attr("src").slice(18, 20));
-        
-        $("#emoji-example").attr("src", "/static/img/emoji/" + emojiId + ".png");
+    $(".emoji").removeClass("select");
+    $(this).addClass("select");
+    
+    emojiId = parseInt($(this).attr("src").slice(18, 20));
+    
+    $("#emoji-example").attr("src", "/static/img/emoji/" + emojiId + ".png");
+    
+    updateEmojiForId(emojiId);
+}
+
+function updateEmojiForId(newId) {
+    $.ajax("/emoji/" + newId, {
+        dataType: "json",
+        success: function(data, textStatus) {
+            // make image objects for each of the items.
+            $(".emoji-photo").remove();
+            $.each(data, function(index, item) {
+                $("<img class='emoji-photo circle'>")
+                    .attr("src", "/static/img/photos/" + item)
+                    .appendTo($("#content"));
+            });
+        }
+    });
 }
 
 function initializeWebcam() {

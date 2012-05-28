@@ -90,6 +90,27 @@ app.get('/camera/', function(req, res) {
     });
 });
 
+
+app.get('/emoji/:id', function(req, res) {
+    var emojiId = parseInt(req.params.id);
+    
+    var list = []
+    if(emojiId in sortedImagesByEmojiId) {
+        list = sortedImagesByEmojiId[emojiId];
+    }
+    
+    // what comes out here is filename, not full paths
+    // (e.g. /static/img/photos/) so we'll need to either prepend it here
+    // or on the client. (client!)
+    
+    // clamp 
+    if(list.length > 30) {
+        list = list.splice(0, 30);
+    }
+    
+    res.send(JSON.stringify(list));
+});
+
 app.post('/camera/', function(req, res) {
     var imgData = req.param("image");
     var emojiId = req.param("emojiId");
