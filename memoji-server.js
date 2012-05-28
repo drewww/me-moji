@@ -108,8 +108,6 @@ app.post('/camera/', function(req, res) {
             // push on the front.
             list.unshift(filename);
             sortedImagesByEmojiId[emojiId] = list;
-            
-            logger.debug("current emoji list: " + JSON.stringify(sortedImagesByEmojiId));
         }
     });
 });
