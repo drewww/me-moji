@@ -221,3 +221,12 @@ body {
 #count2, #count1 {
     margin-left: 50px;
 }
+
+#emoji-example {
+    position: absolute;
+    bottom: -25px;
+    right: 35px;
+    z-index: 51;
+    
+    width: 77px;
+}

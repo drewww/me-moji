@@ -15,13 +15,9 @@ $(document).ready(function() {
     
     $("#photobooth").hide();
     $("#background").hide();
+    $("#emoji-example").hide();
     
-    $(".emoji").click(function() {
-        $(".emoji").removeClass("select");
-        $(this).addClass("select");
-        
-        emojiId = parseInt($(this).attr("src").slice(18, 20));
-    });
+    $(".emoji").click(emojiTabClick);
     
     $("#add-photo").click(function() {
         console.log("Bring up camera.");
@@ -41,10 +37,14 @@ $(document).ready(function() {
     $("#select").click(function() {
 		upload(image);
 		setMode("CAMERA");
+		
+        $(".emoji").click(emojiTabClick);
 	});
 	
 	$("#reject").click(function() {
 		setMode("CAMERA");
+		
+        $(".emoji").click(emojiTabClick);
 	});
 	
 	$("#capture").click(function() {
@@ -56,6 +56,14 @@ $(document).ready(function() {
 	});
 });
 
+function emojiTabClick() {
+        $(".emoji").removeClass("select");
+        $(this).addClass("select");
+        
+        emojiId = parseInt($(this).attr("src").slice(18, 20));
+        
+        $("#emoji-example").attr("src", "/static/img/emoji/" + emojiId + ".png");
+}
 
 function initializeWebcam() {
     $("#video").webcam({
@@ -119,11 +127,18 @@ function initializeWebcam() {
 			setMode("REVIEW");
 			webcam.save();
 		},
-		debug: function(type, string) {console.log("debug: " + type + "; " + string);},
+		debug: function(type, string) {
+            if ( string == 'Camera started' ){
+                // at this point, turn on the images for overlay.
+                $("#emoji-example").show().animate({opacity:1.0}, 250);
+            }
+		},
 		onLoad: function() {
 			console.log("load");
 		}
 	});
+	
+	webcamInitialized = true;
 }
 
 function showPhotobooth() {
@@ -197,6 +212,9 @@ function setMode(mode) {
 			$("#review").hide();
 			break;
 		case "REVIEW":
+	        // disable clicking on emoji in review mode.
+		    $(".emoji").off("click");
+		    
 			$("#image").show();
 			$("#image-background").show();
 
