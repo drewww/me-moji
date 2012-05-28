@@ -5,13 +5,20 @@ var canvas;
 var pos = 0, ctx = null, image = [];
 var rowCount = 0;
 
-var emojiId = 1;
-
 var photoboothShown = false;
 var webcamInitialized = false;
 
+var emojiId = Math.floor(Math.random()*19);
+
 $(document).ready(function() {
     console.log("Hello world!");
+    
+$("#gutter").children().each(function() {
+        if($(this).attr("src").indexOf("/"+emojiId+".png")!=-1) {
+            $(this).addClass("select");
+        }
+    });
+    updateEmojiForId(emojiId);
     
     $("#photobooth").hide();
     $("#background").hide();
@@ -39,6 +46,8 @@ $(document).ready(function() {
 		setMode("CAMERA");
 		
         $(".emoji").click(emojiTabClick);
+        
+        updateEmojiForId(emojiId);
 	});
 	
 	$("#reject").click(function() {
@@ -167,6 +176,7 @@ function showPhotobooth() {
     
     setMode("CAMERA");
     
+    
     $("#photobooth").show();
     $("#background").show().animate({opacity: "0.5"}, 500, "linear");
 
@@ -185,7 +195,10 @@ function hidePhotobooth() {
         $("#photobooth").hide();
     });
     
+    $("#emoji-example").hide();
+    
     photoboothShown = true;
+    updateEmojiForId(emojiId);
 }
 
 
