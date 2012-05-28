@@ -5,9 +5,10 @@ var canvas;
 var pos = 0, ctx = null, image = [];
 var rowCount = 0;
 
-var emojiId = Math.floor(Math.random()*19);
+var emojiId = 1;
 
 var photoboothShown = false;
+var webcamInitialized = false;
 
 $(document).ready(function() {
     console.log("Hello world!");
@@ -15,10 +16,11 @@ $(document).ready(function() {
     $("#photobooth").hide();
     $("#background").hide();
     
-    
     $(".emoji").click(function() {
         $(".emoji").removeClass("select");
         $(this).addClass("select");
+        
+        emojiId = parseInt($(this).attr("src").slice(18, 20));
     });
     
     $("#add-photo").click(function() {
@@ -45,9 +47,18 @@ $(document).ready(function() {
 		setMode("CAMERA");
 	});
 	
-	setMode("CAMERA");
+	$("#capture").click(function() {
+		// show the countdown spans
+		setMode("COUNTDOWN");
+		window.webcam.capture(2);
+		highlight(3);
+		countdown = 2;
+	});
+});
 
-	$("#video").webcam({
+
+function initializeWebcam() {
+    $("#video").webcam({
 		width: 320,
 		height: 240,
 		mode: "callback",
@@ -113,20 +124,17 @@ $(document).ready(function() {
 			console.log("load");
 		}
 	});
-
-	$("#capture").click(function() {
-		// show the countdown spans
-		setMode("COUNTDOWN");
-		window.webcam.capture(2);
-		highlight(3);
-		countdown = 2;
-	});
-    
-    
-});
-
+}
 
 function showPhotobooth() {
+    
+    
+    if(!webcamInitialized) {
+        initializeWebcam(); 
+    }
+    
+    setMode("CAMERA");
+    
     $("#photobooth").show();
     $("#background").show().animate({opacity: "0.5"}, 500, "linear");
 
@@ -150,6 +158,7 @@ function hidePhotobooth() {
 
 
 function upload(image) {
+    console.log("uploading to emojiId: " + emojiId);
 	$.post("/camera/", {"image": canvas.toDataURL("image/png"),
 	"emojiId":emojiId}, function(data) {
 		console.log("server response: " + data);
