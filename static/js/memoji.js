@@ -157,8 +157,12 @@ function upload(image) {
 }
 
 function highlight(num) {
-	$("#countdown span").css("opacity", 0.5);
-	$("#count" + num).css("opacity", 1.0);
+
+    $("#countdown img").each(function() {
+        $(this).attr("src","/static/img/" + $(this).attr("id")[5] + "white.png");
+    });
+    
+    $("#count" + num).attr("src", "/static/img/" + num + "yellow.png");
 }
 
 function setMode(mode) {
