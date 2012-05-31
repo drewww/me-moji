@@ -217,10 +217,18 @@ function hidePhotobooth() {
 
 function upload(image) {
     console.log("uploading to emojiId: " + emojiId);
-	$.post("/camera/", {"image": canvas.toDataURL("image/png"),
-	"emojiId":emojiId}, function(data) {
-		console.log("server response: " + data);
-	});
+    
+    $.ajax({
+      type: 'POST',
+      url: "/camera/",
+      data: {"image":canvas.toDataURL("image/png")},
+      success: function(data, textStatus) {
+  		console.log("server response: " + data + "; " + textStatus);
+      },
+      error: function(data, textStatus) {
+    		console.log("FAIL: " + data + "; " + textStatus);
+      }
+    });
 }
 
 function highlight(num) {
