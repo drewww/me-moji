@@ -221,7 +221,7 @@ function upload(image) {
     $.ajax({
       type: 'POST',
       url: "/camera/",
-      data: {"image":canvas.toDataURL("image/png")},
+      data: {"image":canvas.toDataURL("image/png"), "emojiId":emojiId},
       success: function(data, textStatus) {
   		console.log("server response: " + data + "; " + textStatus);
       },
