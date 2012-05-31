@@ -2,7 +2,8 @@ var express = require('express'),
     program = require('commander'),
     fs = require('fs'),
     _ = require('underscore')._,
-    winston = require('winston');
+    winston = require('winston'),
+    aws_lib = require('node-aws');
 
 var logger= new (winston.Logger)({
     transports: [
@@ -15,6 +16,12 @@ var logger= new (winston.Logger)({
     ],
     levels: winston.config.syslog.levels
 });
+
+
+// load AWS credentials
+var conf = fs.readFileSync("conf.json");
+
+var aws = aws_lib.createClient(conf["aws-access"], conf["aws-secret"]);
 
 program.version(0.1)
     .option('-p, --port [num]', "Set the port.")
