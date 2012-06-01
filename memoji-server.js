@@ -3,7 +3,7 @@ var express = require('express'),
     fs = require('fs'),
     _ = require('underscore')._,
     winston = require('winston'),
-    aws_lib = require('node-aws');
+    knox = require('knox');
 
 var logger= new (winston.Logger)({
     transports: [
@@ -19,9 +19,9 @@ var logger= new (winston.Logger)({
 
 
 // load AWS credentials
-var conf = fs.readFileSync("conf.json");
+var conf = JSON.parse(fs.readFileSync("conf.json"));
 
-var aws = aws_lib.createClient(conf["aws-access"], conf["aws-secret"]);
+var s3 = knox.createClient(conf["aws"]);
 
 program.version(0.1)
     .option('-p, --port [num]', "Set the port.")
@@ -124,19 +124,20 @@ app.post('/camera/', function(req, res) {
     
     logger.info("Received camera post!");
     var filename = Date.now() + "_" + emojiId + ".png";
-    fs.writeFile("static/img/photos/" + filename,
-    new Buffer(imgData.match(/,(.+)/)[1],'base64'),
-    function(err) {
-        if(err==null) {
-            var list = [];
-            if(emojiId in sortedImagesByEmojiId) {
-                list = sortedImagesByEmojiId[emojiId];
-            }
-            
-            // push on the front.
-            list.unshift(filename);
-            sortedImagesByEmojiId[emojiId] = list;
+    var buf = new Buffer(imgData.match(/,(.+)/)[1],'base64');
+    
+    var req = s3.put(filename, {
+        'Content-Length':buf.length,
+        'Content-Type':'image/png'
+    });
+    
+    req.on('response', function(res) {
+        logger.info("response: " + res.statusCode);
+        if(200 == res.statusCode) {
+            logger.info("saved to ", req.url);
         }
     });
+    
+    req.end(buf);
 });
 

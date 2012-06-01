@@ -1,0 +1,4 @@
+{"aws":{"key":"access key here",
+ "secret":"secret key here",
+ "bucket":"bucket name here"}
+}
