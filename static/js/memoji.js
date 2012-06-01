@@ -95,9 +95,9 @@ function updateEmojiPhotosForId(newId) {
         success: function(data, textStatus) {
             // make image objects for each of the items.
             $(".emoji-photo").remove();
-            $.each(data, function(index, item) {
+            $.each(data, function(index, url) {
                 $("<img class='emoji-photo circle'>")
-                    .attr("src", "/static/img/photos/" + item)
+                    .attr("src", url)
                     .appendTo($("#content"));
             });
         }
