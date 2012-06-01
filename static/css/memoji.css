@@ -235,3 +235,9 @@ body {
     
     width: 77px;
 }
+
+#mask {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}

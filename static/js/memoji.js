@@ -20,6 +20,8 @@ $(document).ready(function() {
     $("#photobooth").hide();
     $("#background").hide();
     $("#emoji-example").hide();
+    $("#mask").hide();
+
     
     $(".emoji").click(emojiTabClick);
     
@@ -170,6 +172,7 @@ function initializeWebcam() {
             if ( string == 'Camera started' ){
                 // at this point, turn on the images for overlay.
                 $("#emoji-example").show().animate({opacity:1.0}, 250);
+                $("#mask").show();
             }
 		},
 		onLoad: function() {
@@ -209,6 +212,8 @@ function hidePhotobooth() {
     });
     
     $("#emoji-example").hide();
+    $("#mask").hide();
+    
     
     photoboothShown = true;
     updateEmojiPhotosForId(emojiId);
