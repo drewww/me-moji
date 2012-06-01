@@ -53,6 +53,7 @@ var app = express.createServer();
 
 app.listen(port);
 app.use(express.bodyParser());
+app.use(express.errorHandler({ dumpExceptions: true }));
 app.use("/static", express.static(__dirname + '/static'));
 
 // Setup the index page.
