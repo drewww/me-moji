@@ -60,12 +60,14 @@ $(document).ready(function() {
         $(".emoji").click(emojiTabClick);
 	});
 	
-	$("#capture").click(function() {
+	$("#capture").click(function(event) {
 		// show the countdown spans
 		setMode("COUNTDOWN");
 		window.webcam.capture(2);
 		highlight(3);
 		countdown = 2;
+		
+		event.stopPropagation();
 	});
 });
 
@@ -197,13 +199,14 @@ function showPhotobooth() {
     $("#background").show().animate({opacity: "0.5"}, 500, "linear");
 
     $("#photobooth").animate({height: "400px"}, 500, "linear", function() {
-        // ?
+        $("body").click(hidePhotobooth);
     });
     
     photoboothShown = true;
 }
 
 function hidePhotobooth() {
+    
     $("#background").animate({opacity: "0.0"}, 500, "linear", function() {
         $(this).hide();
     });
