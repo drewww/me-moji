@@ -6,6 +6,7 @@ var pos = 0, ctx = null, image = [];
 var rowCount = 0;
 
 var photoboothShown = false;
+var focusShown = false;
 var webcamInitialized = false;
 
 // the initial none is because emoji id are 1 based right now
@@ -18,26 +19,30 @@ $(document).ready(function() {
     // check if we've got an emojiname from the server.
     var pickRandomName = true;
     if(emojiName!="none") {
-        
         emojiId = emojiNames.indexOf(emojiName);
         if(emojiId!=-1) {
             pickRandomName = false;
         } // otherwise, cascade down below and randomize the id.
         
-    }
+    } else if(initialFocus !="none") {
+        initialFocus += ".png";
+        pickRandomName = false;
+        emojiId = parseInt(initialFocus.slice(14, 16));
+    } 
     
     if(pickRandomName) {
         emojiId = Math.floor(Math.random()*18)+1;
     }
     
     updateEmojiTabSelect();
-    updateEmojiPhotosForId(emojiId);
     
+    // updateEmojiPhotosForId(emojiId);
     
     $("#photobooth").hide();
     $("#background").hide();
     $("#emoji-example").hide();
     $("#mask").hide();
+    $("#focus").hide();
 
     
     $(".emoji").click(emojiTabClick);
@@ -53,6 +58,8 @@ $(document).ready(function() {
     $("#logo, #background").click(function() {
         if(photoboothShown) {
             hidePhotobooth();
+        } else if(focusShown) {
+            hideFocus();
         }
     });
     
@@ -91,6 +98,8 @@ $(document).ready(function() {
 	
     if(initialCamera) {
         showPhotobooth();
+    } else if(initialFocus!="none"){
+        showFocus("http://me-moji.s3.amazonaws.com/" + initialFocus);
     } else {
         updateURLForEmojiId(emojiId);
     }
@@ -114,6 +123,9 @@ function emojiTabClick(event) {
     $(".emoji").removeClass("select");
     $(this).addClass("select");
     
+    // how does this work? it's not always 2 char
+    // TODO update this so it's not so fragile. I think it's working because
+    // parseInt("2.") resolved to 2, but that's a little funny.
     emojiId = parseInt($(this).attr("src").slice(18, 20));
     
     $("#emoji-example").attr("src", "/static/img/emoji/" + emojiId + ".png");
@@ -138,18 +150,60 @@ function updateURLForEmojiId(emojiId, camera) {
     history.pushState({}, "", url);
 }
 
+function updateURLForFocus(filename) {
+    history.pushState({}, "", "/photo/" + filename.split(".")[0]);
+}
+
 function updateEmojiPhotosForId(newId) {
     $.ajax("/photos/" + newId, {
         dataType: "json",
         success: function(data, textStatus) {
             // make image objects for each of the items.
-            $(".emoji-photo").remove();
+            $("#content .emoji-photo").remove();
             $.each(data, function(index, url) {
                 $("<img class='emoji-photo circle'>")
                     .attr("src", url)
                     .appendTo($("#content"));
+                
+                // now add a click listener to all of these
+                $("img.emoji-photo").click(function() {
+                    showFocus($(this).attr('src'));
+                });
             });
         }
+    });
+}
+
+
+// photo ids are the filenames on S3 - timestamp+emojiId
+function showFocus(photoUrl) {
+    showBackground();
+    updateURLForFocus(photoUrl.split("/")[3]);
+    
+    // insert the right picture into the dialog box
+    $("#focus img").attr("src", photoUrl);
+    
+    // pull up a dialog box 
+    $("#focus").show(500);
+    
+    focusShown = true;
+}
+
+function hideFocus() {
+    hideBackground();
+    $("#focus").hide(500);
+    focusShown = false;
+    
+    updateURLForEmojiId(emojiId);
+}
+
+function showBackground() {
+    $("#background").show().animate({opacity: "0.5"}, 500, "linear");
+}
+
+function hideBackground() {
+    $("#background").animate({opacity: "0.0"}, 500, "linear", function() {
+        $(this).hide();
     });
 }
 
@@ -239,7 +293,7 @@ function showPhotobooth() {
     setMode("CAMERA");
     
     $("#photobooth").show();
-    $("#background").show().animate({opacity: "0.5"}, 500, "linear");
+    showBackground();
     
     $("#photobooth").animate({height: "400px"}, 500, "linear", function() {
     });
@@ -254,10 +308,8 @@ function showPhotobooth() {
 }
 
 function hidePhotobooth() {
-    
-    $("#background").animate({opacity: "0.0"}, 500, "linear", function() {
-        $(this).hide();
-    });
+
+    hideBackground();
     $("#photobooth").animate({height: "0px"}, 500, "linear", function() {
         $("#photobooth").hide();
     });

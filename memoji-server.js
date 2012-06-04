@@ -59,16 +59,19 @@ app.use("/static", express.static(__dirname + '/static'));
 // Setup the index page.
 app.get('/', function(req, res) {
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
-        "camera":false}});
+        "camera":false, "initialFocus":"none"}});
 });
 
 app.get('/browse/:name', function(req, res) {
     var emojiName = req.params.name;
-    
-    logger.debug("name: " + emojiName);
-    
     res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
-        "camera":false}});
+        "camera":false, "initialFocus":"none"}});
+});
+
+app.get('/photo/:filename', function(req, res) {
+    var filename = req.params.filename;
+    res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
+        "camera":false, "initialFocus":filename}});
 });
 
 // render the same site for /camera/
@@ -76,7 +79,7 @@ app.get('/camera/:name', function(req, res) {
     var emojiName = req.params.name;
     
     res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
-        "camera":true}});
+        "camera":true, "initialFocus":"none"}});
 });
 
 
