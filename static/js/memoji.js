@@ -181,7 +181,7 @@ function showFocus(photoUrl) {
     updateURLForFocus(photoUrl.split("/")[3]);
     
     // insert the right picture into the dialog box
-    $("#focus img").attr("src", photoUrl);
+    $("#focus img.emoji-photo").attr("src", photoUrl);
     
     // pull up a dialog box 
     $("#focus").show(500);
