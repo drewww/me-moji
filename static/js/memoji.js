@@ -57,7 +57,7 @@ $(document).ready(function() {
     });
     
     // From here down is all camera setup junk, mostly copied from camera.ejs.
-    $("#select").click(function() {
+    $("#select").click(function(event) {
 		upload(image);
 		setMode("CAMERA");
 		
@@ -69,12 +69,14 @@ $(document).ready(function() {
         
         updateEmojiTabSelect();
         updateEmojiPhotosForId(emojiId);
+        event.stopPropagation();
 	});
 	
-	$("#reject").click(function() {
+	$("#reject").click(function(event) {
 		setMode("CAMERA");
 		
         $(".emoji").click(emojiTabClick);
+        event.stopPropagation();
 	});
 	
 	$("#capture").click(function(event) {
@@ -229,13 +231,15 @@ function showPhotobooth() {
     
     setMode("CAMERA");
     
-    
     $("#photobooth").show();
     $("#background").show().animate({opacity: "0.5"}, 500, "linear");
-
+    
     $("#photobooth").animate({height: "400px"}, 500, "linear", function() {
-        $("body").click(hidePhotobooth);
     });
+    
+    $("#gutter").css("position", "relative");
+    $("#gutter").css("z-index", "11");
+
     
     photoboothShown = true;
     
@@ -254,6 +258,8 @@ function hidePhotobooth() {
     $("#emoji-example").hide();
     $("#mask").hide();
     
+
+    $("#gutter").css("position", "static");
     
     photoboothShown = false;
     updateEmojiPhotosForId(emojiId);
