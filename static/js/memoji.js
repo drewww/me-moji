@@ -32,7 +32,7 @@ $(document).ready(function() {
     
     updateEmojiTabSelect();
     updateEmojiPhotosForId(emojiId);
-    updateURLForEmojiId(emojiId);
+    
     
     $("#photobooth").hide();
     $("#background").hide();
@@ -89,10 +89,12 @@ $(document).ready(function() {
 		event.stopPropagation();
 	});
 	
-	
-	if(initialCamera) {
+    if(initialCamera) {
         showPhotobooth();
+    } else {
+        updateURLForEmojiId(emojiId);
     }
+	
 });
 
 function updateEmojiTabSelect() {
