@@ -18,7 +18,6 @@ var logger= new (winston.Logger)({
     levels: winston.config.syslog.levels
 });
 
-
 // load AWS credentials
 var conf = JSON.parse(fs.readFileSync("conf.json"));
 
@@ -56,19 +55,32 @@ app.use(express.bodyParser());
 app.use(express.errorHandler({ dumpExceptions: true }));
 app.use("/static", express.static(__dirname + '/static'));
 
+
 // Setup the index page.
 app.get('/', function(req, res) {
-    res.render('index.ejs', {layout:false});
+    res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
+        "camera":false}});
 });
 
-app.get('/camera/', function(req, res) {
-    res.render('camera.ejs', {layout:false,
-        locals:{"emojiId":Math.floor(Math.random()*21)}
-    });
+app.get('/browse/:name', function(req, res) {
+    var emojiName = req.params.name;
+    
+    logger.debug("name: " + emojiName);
+    
+    res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
+        "camera":false}});
+});
+
+// render the same site for /camera/
+app.get('/camera/:name', function(req, res) {
+    var emojiName = req.params.name;
+    
+    res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
+        "camera":true}});
 });
 
 
-app.get('/emoji/:id', function(req, res) {
+app.get('/photos/:id', function(req, res) {
     var emojiId = parseInt(req.params.id);
     
     // fetch it off redis

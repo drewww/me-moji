@@ -8,14 +8,31 @@ var rowCount = 0;
 var photoboothShown = false;
 var webcamInitialized = false;
 
-var emojiId = Math.floor(Math.random()*19);
+// the initial none is because emoji id are 1 based right now
+var emojiNames = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
+    "relieved", "grin", "tongue", "unamused", "smirk", "pensive",
+    "confounded", "crying", "tears", "astonished", "scream", "pout", "cat"];
 
 $(document).ready(function() {
-    console.log("Hello world!");
+    
+    // check if we've got an emojiname from the server.
+    var pickRandomName = true;
+    if(emojiName!="none") {
+        
+        emojiId = emojiNames.indexOf(emojiName);
+        if(emojiId!=-1) {
+            pickRandomName = false;
+        } // otherwise, cascade down below and randomize the id.
+        
+    }
+    
+    if(pickRandomName) {
+        emojiId = Math.floor(Math.random()*18)+1;
+    }
     
     updateEmojiTabSelect();
-    
     updateEmojiPhotosForId(emojiId);
+    updateURLForEmojiId(emojiId);
     
     $("#photobooth").hide();
     $("#background").hide();
@@ -80,9 +97,11 @@ function updateEmojiTabSelect() {
     });
     
     $("#emoji-example").attr("src", "/static/img/emoji/" + emojiId + ".png");
+    
+    updateEmojiPhotosForId(emojiId, photoboothShown);
 }
 
-function emojiTabClick() {
+function emojiTabClick(event) {
     $(".emoji").removeClass("select");
     $(this).addClass("select");
     
@@ -90,11 +109,28 @@ function emojiTabClick() {
     
     $("#emoji-example").attr("src", "/static/img/emoji/" + emojiId + ".png");
     
+    // we're going to do push state on the browser so we can keep the URL
+    // up to date so if people C&P the URL it will actually go to the same
+    // page.
+    
     updateEmojiPhotosForId(emojiId);
+    updateURLForEmojiId(emojiId, photoboothShown);
+    
+    event.stopPropagation();
+}
+
+function updateURLForEmojiId(emojiId, camera) {
+    
+    var url = "/browse/";
+    if(camera) url = "/camera/";
+    
+    url = url + emojiNames[emojiId];
+    
+    history.pushState({}, "", url);
 }
 
 function updateEmojiPhotosForId(newId) {
-    $.ajax("/emoji/" + newId, {
+    $.ajax("/photos/" + newId, {
         dataType: "json",
         success: function(data, textStatus) {
             // make image objects for each of the items.
@@ -186,8 +222,7 @@ function initializeWebcam() {
 }
 
 function showPhotobooth() {
-    
-    
+        
     if(!webcamInitialized) {
         initializeWebcam(); 
     }
@@ -203,6 +238,8 @@ function showPhotobooth() {
     });
     
     photoboothShown = true;
+    
+    updateURLForEmojiId(emojiId, true);
 }
 
 function hidePhotobooth() {
@@ -218,8 +255,9 @@ function hidePhotobooth() {
     $("#mask").hide();
     
     
-    photoboothShown = true;
+    photoboothShown = false;
     updateEmojiPhotosForId(emojiId);
+    updateURLForEmojiId(emojiId, false);
 }
 
 
