@@ -88,6 +88,11 @@ $(document).ready(function() {
 		
 		event.stopPropagation();
 	});
+	
+	
+	if(initialCamera) {
+        showPhotobooth();
+    }
 });
 
 function updateEmojiTabSelect() {
