@@ -138,6 +138,10 @@ img.share {
     cursor: pointer;
 }
 
+#focus-footer {
+    margin-top: -10px;
+}
+
 
 /****************************************************************************/
 /*                  PHOTOBOOTH STYLES                                       */

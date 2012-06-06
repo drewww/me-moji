@@ -183,6 +183,18 @@ function showFocus(photoUrl) {
     // insert the right picture into the dialog box
     $("#focus img.emoji-photo").attr("src", photoUrl);
     
+    
+    // add in the like buttons for facebook and twitter to #focus-footer
+    $("#focus-footer").empty();
+    
+    var facebook = $('<div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div>');
+    var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-href="http://me-moji.com/" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>\
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>;')
+//    twitter.attr("data-href", );
+    
+    $("#focus-footer").append(twitter);
+    $("#focus-footer").append(facebook)
+    
     // pull up a dialog box 
     $("#focus").show(500);
     
