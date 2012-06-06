@@ -139,5 +139,6 @@ app.post('/camera/', function(req, res) {
     });
     
     req.end(buf);
+    res.end();
 });
 
