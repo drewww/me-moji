@@ -190,17 +190,20 @@ function showFocus(photoUrl) {
     var facebook = $('<div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div>');
     var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-href="http://me-moji.com/" data-text="A cute me-moji face!" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>')
     
+    setupFacebook(document, 'script', 'facebook-jssdk');
     setupTwitter(document, "script", "twitter-wjs");
     
     $("#focus-footer").append(twitter);
     $("#focus-footer").append(facebook)
     
-    FB.XFBML.parse(document.getElementById('focus-footer'));
-    
     // pull up a dialog box 
     $("#focus").show(500);
     
     focusShown = true;
+    
+    setTimeout(function() {
+        FB.XFBML.parse(document.getElementById('focus-footer'));
+        }, 100);
 }
 
 function hideFocus() {
@@ -399,6 +402,15 @@ function setMode(mode) {
 			$("#review").show();
 			break;
 	}
+}
+
+
+function setupFacebook(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
 }
 
 
