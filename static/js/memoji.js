@@ -188,12 +188,14 @@ function showFocus(photoUrl) {
     $("#focus-footer").empty();
     
     var facebook = $('<div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div>');
-    var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-href="http://me-moji.com/" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>\
-    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>;')
-//    twitter.attr("data-href", );
+    var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-href="http://me-moji.com/" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>')
+    
+    setupTwitter(document, "script", "twitter-wjs");
     
     $("#focus-footer").append(twitter);
     $("#focus-footer").append(facebook)
+    
+    FB.XFBML.parse(document.getElementById('focus-footer'));
     
     // pull up a dialog box 
     $("#focus").show(500);
@@ -396,5 +398,29 @@ function setMode(mode) {
 			$("#countdown").hide();
 			$("#review").show();
 			break;
+	}
+}
+
+
+// Hacked up tweet button code
+function setupTwitter(d, s, id){
+
+// THIS HACK IS DISGUSTING. The problem is that we want to re-format tweet
+// buttons each time we show a new picture. Unfortunately, something triggers
+// when the widget.js script is added that does the search. I can't figure
+// out where to plug into that script to just call that method each time
+// I want to show a new twitter button. So instead I just manually remove the
+// special script tag each time and force a re-run. This is probably heinously
+// slow but I haven't figured out an alternative method yet.
+
+$("#" + id).remove();
+
+var js,fjs=d.getElementsByTagName(s)[0];
+
+if(!d.getElementById(id)){
+	js=d.createElement(s);
+	js.id=id;
+	js.src="//platform.twitter.com/widgets.js";
+	fjs.parentNode.insertBefore(js,fjs);
 	}
 }
