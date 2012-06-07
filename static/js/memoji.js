@@ -188,7 +188,7 @@ function showFocus(photoUrl) {
     $("#focus-footer").empty();
     
     var facebook = $('<div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div>');
-    var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-href="http://me-moji.com/" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>')
+    var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-href="http://me-moji.com/" data-text="A cute me-moji face!" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>')
     
     setupTwitter(document, "script", "twitter-wjs");
     
