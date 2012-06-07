@@ -161,13 +161,17 @@ function updateEmojiPhotosForId(newId) {
             // make image objects for each of the items.
             $("#content .emoji-photo").remove();
             $.each(data, function(index, url) {
-                $("<img class='emoji-photo circle'>")
-                    .attr("src", url)
-                    .appendTo($("#content"));
+                
+                // each element is an image and a mask.
+                var newItem = $("<div class='emoji-container'>\
+<img class='photo-mask circle' src='/static/img/whitemask_square.png'>\
+<img class='emoji-photo circle' src="+url+"></div>");
+                
+                newItem.appendTo($("#content"));
                 
                 // now add a click listener to all of these
-                $("img.emoji-photo").click(function() {
-                    showFocus($(this).attr('src'));
+                newItem.click(function() {
+                    showFocus($(this).children()[1].src);
                 });
             });
         }
@@ -245,12 +249,15 @@ function initializeWebcam() {
 				var x = i;
 				var y = rowCount;
 				var alpha = 0xff;
-				var distance = Math.sqrt(Math.pow(x-160, 2)+Math.pow(y-120, 2));
-				if(distance>120.5) {
-					alpha = 0x00;
-				} else if(distance>119.5) {
-					alpha = 0x80;
-				}
+				
+				// disabling the terrible auto-masking for now in favor of
+				// the new square image mask.
+                // var distance = Math.sqrt(Math.pow(x-160, 2)+Math.pow(y-120, 2));
+                // if(distance>120.5) {
+                //  alpha = 0x00;
+                // } else if(distance>119.5) {
+                //  alpha = 0x80;
+                // }
 				
 				var tmp = parseInt(col[i]);
 				img.data[pos + 0] = (tmp >> 16) & 0xff;

@@ -76,14 +76,24 @@ body {
 
 .circle {
     width: 160px;
-    float: left;
-    border-radius: 80px;
     margin-left: 10px;
     margin-top: 10px;
 }
 
+.emoji-container {
+    position: relative;
+    float: left;
+}
+
+.photo-mask {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
 #add-photo {
     cursor: pointer;
+    float: left;
 }
 
 #add-photo:hover {
