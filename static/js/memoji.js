@@ -160,14 +160,39 @@ function updateEmojiPhotosForId(newId) {
         success: function(data, textStatus) {
             // make image objects for each of the items.
             $("#content .emoji-photo").remove();
+            
+            // this gets a little tricky. we want to group every 5 pictures
+            // into a single li. if that one is full, make a new one and
+            // move to the next line. every other one will be formatted
+            // differently. 
+            var odd = false;
             $.each(data, function(index, url) {
+                
+                // figure out our container first. get the last child of
+                // #all-photos and see how many children IT has.
+                
+                var container = $("#all-photos li:last-child");
+                
+                var maxRowLength = 5;
+                if(odd) maxRowLength = 4;
+                
+                if(container.children().length==maxRowLength) {
+                    container.append($("<br class='clear'>"));
+                    
+                    // make a new LI and append it and set that as the new
+                    // container.
+                    container = $("<li></li>");
+                    container.appendTo("#all-photos");
+                    
+                    odd = !odd;
+                }
                 
                 // each element is an image and a mask.
                 var newItem = $("<div class='emoji-container'>\
 <img class='photo-mask circle' src='/static/img/whitemask_square.png'>\
 <img class='emoji-photo circle' src="+url+"></div>");
                 
-                newItem.appendTo($("#content"));
+                newItem.appendTo(container);
                 
                 // now add a click listener to all of these
                 newItem.click(function() {
@@ -250,12 +275,10 @@ function initializeWebcam() {
 				var y = rowCount;
 				var alpha = 0xff;
 				
-                // var distance = Math.sqrt(Math.pow(x-160, 2)+Math.pow(y-120, 2));
-                // if(distance>120.5) {
-                //     alpha = 0x00;
-                // } else if(distance>119.5) {
-                //     alpha = 0x80;
-                // }
+                var distance = Math.sqrt(Math.pow(x-160, 2)+Math.pow(y-120, 2));
+                if(distance>123) {
+                    alpha = 0x00;
+                } 
 				
 				var tmp = parseInt(col[i]);
 				img.data[pos + 0] = (tmp >> 16) & 0xff;

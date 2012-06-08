@@ -76,13 +76,13 @@ body {
 
 .circle {
     width: 160px;
-    margin-left: 10px;
-    margin-top: 10px;
 }
 
 .emoji-container {
     position: relative;
     float: left;
+    
+    margin-right: 26px;
 }
 
 .photo-mask {
@@ -94,6 +94,9 @@ body {
 #add-photo {
     cursor: pointer;
     float: left;
+    margin-right: 26px;
+    
+    border-radius: 80px;
 }
 
 #add-photo:hover {
@@ -145,8 +148,8 @@ body {
     width: 400px;
     position: absolute;
     
-    top: 50px;
-    left: 50px;
+    top: 60px;
+    left: 60px;
 }
 
 img.share {
@@ -158,6 +161,35 @@ img.share {
 
 #focus-footer {
     margin-top: -10px;
+}
+
+ul {
+    margin-left: 0px;
+    padding-left: 0px;
+}
+
+li {
+    list-style-type: none;
+    margin-left: 0px;
+}
+
+li:nth-child(odd) {
+    
+}
+
+li:nth-child(even) {
+/*    position: relative;
+    left: 85px;
+    top: -30px;
+    
+    height: 174px;
+*/
+    margin-left: 90px;
+    margin-top: -30px;
+}
+
+li div.emoji-container:nth-child(0) {
+    margin-left: 0px;
 }
 
 
