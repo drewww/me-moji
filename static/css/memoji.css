@@ -83,6 +83,7 @@ body {
     float: left;
     
     margin-right: 26px;
+    height: 160px;
 }
 
 .photo-mask {
@@ -178,18 +179,7 @@ li:nth-child(odd) {
 }
 
 li:nth-child(even) {
-/*    position: relative;
-    left: 85px;
-    top: -30px;
-    
-    height: 174px;
-*/
     margin-left: 90px;
-    margin-top: -30px;
-}
-
-li div.emoji-container:nth-child(0) {
-    margin-left: 0px;
 }
 
 
