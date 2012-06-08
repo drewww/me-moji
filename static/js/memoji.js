@@ -250,13 +250,11 @@ function initializeWebcam() {
 				var y = rowCount;
 				var alpha = 0xff;
 				
-				// disabling the terrible auto-masking for now in favor of
-				// the new square image mask.
                 // var distance = Math.sqrt(Math.pow(x-160, 2)+Math.pow(y-120, 2));
                 // if(distance>120.5) {
-                //  alpha = 0x00;
+                //     alpha = 0x00;
                 // } else if(distance>119.5) {
-                //  alpha = 0x80;
+                //     alpha = 0x80;
                 // }
 				
 				var tmp = parseInt(col[i]);
