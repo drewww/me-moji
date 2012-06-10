@@ -80,6 +80,8 @@ body {
     
     right: 15px;
     bottom: 15px;
+    
+    cursor: pointer;
 }
 
 #about-button img {
@@ -153,6 +155,10 @@ body {
 
 #about img {
     width: 450px;
+}
+
+#about a {
+    border: 0px;
 }
 
 #focus {
