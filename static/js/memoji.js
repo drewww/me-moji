@@ -159,7 +159,12 @@ function updateEmojiPhotosForId(newId) {
         dataType: "json",
         success: function(data, textStatus) {
             // make image objects for each of the items.
-            $("#content .emoji-photo").remove();
+            
+            $("#content .emoji-container").remove();
+            $("#content ul li .clear").remove();
+            $("ul li:empty").remove();
+            
+            // if(emptyLi) emptyLi.remove();
             
             // this gets a little tricky. we want to group every 5 pictures
             // into a single li. if that one is full, make a new one and
