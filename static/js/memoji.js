@@ -8,6 +8,7 @@ var rowCount = 0;
 var photoboothShown = false;
 var focusShown = false;
 var webcamInitialized = false;
+var aboutShown = false;
 
 // the initial none is because emoji id are 1 based right now
 var emojiNames = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
@@ -43,7 +44,14 @@ $(document).ready(function() {
     $("#emoji-example").hide();
     $("#mask").hide();
     $("#focus").hide();
-
+    $("#about").hide();
+    
+    
+    $("#about-button").click(function(event) {
+        showBackground();
+        $("#about").show(500);
+        aboutShown = true;
+    });
     
     $(".emoji").click(emojiTabClick);
     
@@ -60,6 +68,9 @@ $(document).ready(function() {
             hidePhotobooth();
         } else if(focusShown) {
             hideFocus();
+        } else if(aboutShown) {
+            hideBackground();
+            $("#about").hide(500);
         }
     });
     
