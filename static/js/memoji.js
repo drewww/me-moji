@@ -222,6 +222,10 @@ function updateEmojiPhotosForId(newId) {
                     showFocus($(this).children()[1].src);
                 });
             });
+            
+            // after doing this, get the last item and put a br on it.
+            $("#all-photos li:last-child").append($("<br class='clear'>"));
+            
         }
     });
 }
