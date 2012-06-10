@@ -35,9 +35,6 @@ body {
 #content {
     position: relative;
     
-/*    overflow-y: hidden;
-    overflow-x: hidden;
-*/    
     width: 980px;
     
     padding: 10px;
@@ -362,4 +359,6 @@ li:nth-child(even) {
     position: absolute;
     top: 0px;
     left: 0px;
+    
+    z-index: 50;
 }
