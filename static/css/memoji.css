@@ -35,9 +35,9 @@ body {
 #content {
     position: relative;
     
-    overflow-y: hidden;
+/*    overflow-y: hidden;
     overflow-x: hidden;
-    
+*/    
     width: 980px;
     
     padding: 10px;
