@@ -79,7 +79,7 @@ body {
     position: fixed;
     
     right: 15px;
-    top: 500px;
+    bottom: 15px;
 }
 
 #about-button img {
