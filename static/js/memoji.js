@@ -10,6 +10,9 @@ var focusShown = false;
 var webcamInitialized = false;
 var aboutShown = false;
 
+var sndBeep;
+var sndShutter;
+
 // the initial none is because emoji id are 1 based right now
 var emojiNames = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
     "relieved", "grin", "tongue", "unamused", "smirk", "pensive",
@@ -46,6 +49,8 @@ $(document).ready(function() {
     $("#focus").hide();
     $("#about").hide();
     
+    sndBeep = new Audio("/static/sounds/beep.mp3");
+    sndShutter = new Audio("/static/sounds/shutter.mp3");
     
     $("#about-button").click(function(event) {
         showBackground();
@@ -192,12 +197,10 @@ function updateEmojiPhotosForId(newId) {
                 var maxRowLength = 5;
                 if(odd) maxRowLength = 4;
                 
-                if(container.children().length==maxRowLength) {
-                    container.append($("<br class='clear'>"));
-                    
+                if(container.find(".emoji-container, #add-photo").length==maxRowLength) {
                     // make a new LI and append it and set that as the new
                     // container.
-                    container = $("<li></li>");
+                    container = $("<li><br class='clear'></li>");
                     container.appendTo("#all-photos");
                     
                     odd = !odd;
@@ -208,7 +211,11 @@ function updateEmojiPhotosForId(newId) {
 <img class='photo-mask circle' src='/static/img/whitemask_square.png'>\
 <img class='emoji-photo circle' src="+url+"></div>");
                 
-                newItem.appendTo(container);
+                if(container.hasClass("first")) {
+                    newItem.appendTo(container);
+                } else {
+                    newItem.prependTo(container);
+                }
                 
                 // now add a click listener to all of these
                 newItem.click(function() {
@@ -276,7 +283,8 @@ function initializeWebcam() {
 		mode: "callback",
 		swffile: "/static/js/lib/jscam/jscam.swf",
 		onTick: function() {
-			console.log("tick!");
+		    sndBeep.currentTime = 0;
+            sndBeep.play();
 			highlight(countdown);
 			countdown--;
 		},
@@ -319,7 +327,10 @@ function initializeWebcam() {
 			jQuery("#flash").fadeOut("fast", function () {
 				jQuery("#flash").css("opacity", 1);
 			});
-			console.log("IN ON CAPTURE");
+
+		    sndShutter.currentTime = 0;
+            sndShutter.play();
+
 			canvas = document.getElementById("image");
 			canvas.setAttribute('width', 240);
 			canvas.setAttribute('height', 240);

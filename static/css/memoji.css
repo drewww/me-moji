@@ -239,7 +239,7 @@ li:nth-child(even) {
     z-index: 11;
     overflow: hidden;
     
-    top: 103px;
+    top: 0px;
     left: 0px;
     
     width: 1000px;
