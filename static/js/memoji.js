@@ -58,6 +58,11 @@ $(document).ready(function() {
         aboutShown = true;
     });
     
+    $(".close-button").click(function(event) {
+        if(photoboothShown) hidePhotobooth();
+        else hideFocus();
+    });
+    
     $(".emoji").click(emojiTabClick);
     
     $("#add-photo").click(function() {
