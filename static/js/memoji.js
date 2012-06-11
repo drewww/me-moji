@@ -208,7 +208,7 @@ function updateEmojiPhotosForId(newId) {
                 
                 // each element is an image and a mask.
                 var newItem = $("<div class='emoji-container'>\
-<img class='photo-mask circle' src='/static/img/whitemask_square.png'>\
+<img class='photo-mask circle' src='/static/img/whitemask_ring15.png'>\
 <img class='emoji-photo circle' src="+url+"></div>");
                 
                 if(container.hasClass("first")) {
