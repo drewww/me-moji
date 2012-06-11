@@ -146,14 +146,14 @@ body {
     
     z-index: 15;
     
-    width: 450px;
-    height: 700px;
+    width: 400px;
+    height: 622px;
     
     top: 50%;
     left: 50%;
     
-    margin-left: -225px;
-    margin-top: -350px;
+    margin-left: -200px;
+    margin-top: -311px;
     
     box-shadow: 3px 3px 3px black;
     
@@ -161,7 +161,7 @@ body {
 }
 
 #about img {
-    width: 450px;
+    width: 400px;
 }
 
 #about a {
