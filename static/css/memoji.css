@@ -146,8 +146,8 @@ body {
     
     z-index: 15;
     
-    width: 400px;
-    height: 622px;
+    width: 350px;
+    height: 545px;
     
     top: 50%;
     left: 50%;
@@ -161,7 +161,7 @@ body {
 }
 
 #about img {
-    width: 400px;
+    width: 350px;
 }
 
 #about a {
