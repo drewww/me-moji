@@ -49,8 +49,15 @@ $(document).ready(function() {
     $("#focus").hide();
     $("#about").hide();
     
-    sndBeep = new Audio("/static/sounds/beep.mp3");
-    sndShutter = new Audio("/static/sounds/shutter.mp3");
+    
+    
+    if(jQuery.browser.mozilla) {
+        sndBeep = new Audio("/static/sounds/beep.ogg");
+        sndShutter = new Audio("/static/sounds/shutter.ogg");
+    } else {
+        sndBeep = new Audio("/static/sounds/beep.m4a");
+        sndShutter = new Audio("/static/sounds/shutter.m4a");
+    }
     
     $("#about-button").click(function(event) {
         showBackground();
@@ -292,8 +299,12 @@ function initializeWebcam() {
 		mode: "callback",
 		swffile: "/static/js/lib/jscam/jscam.swf",
 		onTick: function() {
-		    sndBeep.currentTime = 0;
-            sndBeep.play();
+		    
+		    if(sndBeep!=null) {
+    		    sndBeep.currentTime = 0;
+                sndBeep.play();
+		    }
+		    
 			highlight(countdown);
 			countdown--;
 		},
@@ -336,10 +347,12 @@ function initializeWebcam() {
 			jQuery("#flash").fadeOut("fast", function () {
 				jQuery("#flash").css("opacity", 1);
 			});
-
-		    sndShutter.currentTime = 0;
-            sndShutter.play();
-
+            
+            if(sndShutter != null) {
+    		    sndShutter.currentTime = 0;
+                sndShutter.play();
+            }
+            
 			canvas = document.getElementById("image");
 			canvas.setAttribute('width', 240);
 			canvas.setAttribute('height', 240);
