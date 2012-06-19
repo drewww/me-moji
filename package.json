@@ -8,6 +8,8 @@
 		"underscore":"*",
 		"ejs":"*",
 		"knox":"*",
-		"redis":"*"
+		"redis":"*",
+		"connect-redis":"*",
+		"connect":"*"
 	}
 }

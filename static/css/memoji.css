@@ -372,3 +372,49 @@ li:nth-child(even) {
     
     z-index: 50;
 }
+
+#session-photos {
+    position: relative;
+    
+    background-image: url("/static/img/backgroundwshadow.png");
+    background-position: left top;
+    
+    height: 50px;
+    width: 100%;
+}
+
+#session-photos .emoji {
+    float: none;
+    position: absolute;
+    top: -45px; /* Not totally sure why this isn't just 4px */
+    opacity: 0.4;
+}
+
+#session-photos .slot0 {
+    left: 4px;
+}
+
+#session-photos .slot1 {
+    left: 52px;
+}
+
+#session-photos .slot2 {
+    left: 100px;
+}
+
+#session-photos .slot3 {
+    left: 148px;
+}
+
+#session-photos .slot4 {
+    left: 196px;
+}
+
+#session-photos .slot5 {
+    left: 244px;
+}
+
+#session-photos .slot6 {
+    left: 292px;
+}
+

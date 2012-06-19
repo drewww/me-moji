@@ -3,5 +3,7 @@
  "bucket":"bucket name here"},
 
  "redis":{"server":"redis ip here",
- "port":6379}
+ "port":6379},
+
+ "session-secret":"secret string"
 }

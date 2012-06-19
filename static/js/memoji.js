@@ -389,7 +389,7 @@ function showPhotobooth() {
     $("#photobooth").show();
     showBackground();
     
-    $("#photobooth").animate({height: "400px"}, 500, "linear", function() {
+    $("#photobooth").animate({height: "450px"}, 500, "linear", function() {
     });
     
     $("#gutter").css("position", "relative");

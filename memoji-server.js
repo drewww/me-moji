@@ -5,6 +5,7 @@ var express = require('express'),
     winston = require('winston'),
     redis_lib = require('redis'),
     knox = require('knox'),
+    RedisStore = require('connect-redis')(express),
     exec = require('child_process').exec;
 
 
@@ -28,6 +29,12 @@ var s3 = knox.createClient(conf["aws"]);
 
 var redis = redis_lib.createClient(conf["redis"]["port"],
     conf["redis"]["server"]);
+
+// we could reuse the existing connection, but that would put session vars
+// in the same namespace as everything else. Seems cleaner to put them
+// in a different database index.
+var redisSessionStore = new RedisStore({"host":conf["redis"]["server"],
+    "port":conf["redis"]["port"], "db":1});
 
 
 program.version(0.1)
@@ -53,6 +60,11 @@ if(program.port) {
 var app = express.createServer();
 
 app.listen(port);
+
+app.use(express.cookieParser());
+app.use(express.session({secret:conf["session-secret"],
+    store:redisSessionStore}));
+
 app.use(express.bodyParser());
 app.use(express.errorHandler({ dumpExceptions: true }));
 app.use("/static", express.static(__dirname + '/static'));
