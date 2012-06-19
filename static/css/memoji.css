@@ -97,6 +97,10 @@ body {
     height: 160px;
 }
 
+.emoji-container img {
+    cursor: pointer;
+}
+
 .close-button {
     position: absolute;
     top: 10px;
@@ -305,6 +309,8 @@ li:nth-child(even) {
 #select, #reject {
 	float: left;
     width: 60px;
+    
+    cursor: pointer;
 }
 
 #select {
