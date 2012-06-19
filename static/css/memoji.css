@@ -85,6 +85,16 @@ body {
     height: 44px;
 }
 
+#about-button img:hover {
+    height: 49px;
+}
+
+#about-button:active {
+    height: 49px;
+    bottom: 10px;
+}
+
+
 .circle {
     width: 160px;
 }
@@ -101,12 +111,25 @@ body {
     cursor: pointer;
 }
 
+.button {
+    cursor: pointer;
+}
+
 .close-button {
     position: absolute;
     top: 10px;
     right: 10px;
     width: 30px;
     cursor: pointer;
+}
+
+.close-button:hover {
+    width: 34px;
+}
+
+.close-button:active {
+    width: 34px;
+    padding-top: 3px;
 }
 
 .photo-mask {
@@ -288,6 +311,16 @@ li:nth-child(even) {
 	margin-top: 20px;
 }
 
+#capture:hover {
+    width: 75px;
+}
+
+#capture:active {
+    width: 75px;
+    padding-top: 3px;
+}
+
+
 #flash {
 	position:fixed;
 	top:0px;
@@ -301,7 +334,7 @@ li:nth-child(even) {
 
 #review {
     margin-top: 20px;
-    width: 140px;
+    width: 150px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -309,12 +342,28 @@ li:nth-child(even) {
 #select, #reject {
 	float: left;
     width: 60px;
-    
-    cursor: pointer;
 }
+
+#select:hover, #reject:hover {
+    width: 65px;
+}
+
+#select:hover {
+    margin-right: 15px;
+}
+
+#select:active, #reject:active {
+    width: 65px;
+    padding-top: 3px;
+}
+
 
 #select {
     margin-right: 20px;
+}
+
+#select:active {
+    margin-right: 15px;
 }
 
 .clear {
