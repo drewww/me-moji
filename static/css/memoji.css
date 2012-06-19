@@ -202,12 +202,12 @@ body {
     top: 50%;
     left: 50%;
     
-    margin-left: -250px;
-    margin-top: -250px;
+    margin-left: -185px;
+    margin-top: -185px;
     
     box-shadow: 3px 3px 3px black;
-    width: 500px;
-    height: 500px;
+    width: 370px;
+    height: 370px;
     padding: 10px;
     
     background-color: white;
@@ -217,20 +217,20 @@ body {
 
 #focus .emoji-photo {
     display: block;
-    width: 400px;
+    width: 330px;
     
-    margin-top: 50px;
-    margin-left: 50px;
+    margin-top: 20px;
+    margin-left: 20px;
     margin-right: 50px;
     margin-bottom: 10px;
 }
 
 #focus .photo-mask {
-    width: 420px;
+    width: 350px;
     position: absolute;
     
-    top: 50px;
-    left: 50px;
+    top: 20px;
+    left: 20px;
 }
 
 img.share {
@@ -241,7 +241,7 @@ img.share {
 }
 
 #focus-footer {
-    margin-top: -10px;
+    margin-top: -40px;
 }
 
 ul {
