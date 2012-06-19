@@ -391,7 +391,7 @@ li:nth-child(even) {
 }
 
 #session-photos .slot0 {
-    left: 4px;
+    left: 0px;
 }
 
 #session-photos .slot1 {
@@ -399,22 +399,74 @@ li:nth-child(even) {
 }
 
 #session-photos .slot2 {
-    left: 100px;
+    left: 104px;
 }
 
 #session-photos .slot3 {
-    left: 148px;
+    left: 156px;
 }
 
 #session-photos .slot4 {
-    left: 196px;
+    left: 208px;
 }
 
 #session-photos .slot5 {
-    left: 244px;
+    left: 260px;
 }
 
 #session-photos .slot6 {
-    left: 292px;
+    left: 312px;
+}
+
+#session-photos .slot7 {
+    left: 364px;
+}
+
+#session-photos .slot8 {
+    left: 416px;
+}
+
+#session-photos .slot9 {
+    left: 468px;
+}
+
+#session-photos .slot10 {
+    left: 520px;
+}
+
+#session-photos .slot11 {
+    left: 572px;
+}
+
+#session-photos .slot12 {
+    left: 624px;
+}
+
+#session-photos .slot13 {
+    left: 676px;
+}
+
+#session-photos .slot14 {
+    left: 728px;
+}
+
+#session-photos .slot15 {
+    left: 780px;
+}
+
+#session-photos .slot16 {
+    left: 832px;
+}
+
+#session-photos .slot17 {
+    left: 884px;
+}
+
+#session-photos .slot18 {
+    left: 936px;
+}
+
+#session-photos .slot19 {
+    left: 988px;
 }
 
