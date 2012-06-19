@@ -72,8 +72,13 @@ app.get('/browse/:name', function(req, res) {
 
 app.get('/photo/:filename', function(req, res) {
     var filename = req.params.filename;
+    
+    // when we're loading photos directly, insert the FB meta tags that help
+    // fb identify the right image to include as the thumbnail. 
+    // see: http://stackoverflow.com/questions/1138460/how-does-facebook-sharer-select-images
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
-        "camera":false, "initialFocus":filename}});
+        "camera":false, "initialFocus":filename,
+    "fbMetaImageURL":"http://me-moji.s3.amazonaws.com/" + filename + ".png"}});
 });
 
 // render the same site for /camera/
