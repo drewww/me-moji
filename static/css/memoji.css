@@ -297,14 +297,14 @@ li:nth-child(even) {
 
 #review {
     margin-top: 20px;
-    width: 160px;
+    width: 140px;
     margin-left: auto;
     margin-right: auto;
 }
 
 #select, #reject {
 	float: left;
-    width: 70px;
+    width: 60px;
 }
 
 #select {
