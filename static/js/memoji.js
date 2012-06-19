@@ -148,13 +148,21 @@ function updateEmojiTabSelect() {
 }
 
 function emojiTabClick(event) {
+    
+    var tab = this;
+    
+    if($(event.target).parent().attr("id")=="session-photos") {
+        var id = parseInt($(this).attr("src").slice(18, 20))
+        tab = $("#emoji" + id);
+    }
+    
     $(".emoji").removeClass("select");
-    $(this).addClass("select");
+    $(tab).addClass("select");
     
     // how does this work? it's not always 2 char
     // TODO update this so it's not so fragile. I think it's working because
     // parseInt("2.") resolved to 2, but that's a little funny.
-    emojiId = parseInt($(this).attr("src").slice(18, 20));
+    emojiId = parseInt($(tab).attr("src").slice(18, 20));
     
     $("#emoji-example").attr("src", "/static/img/emoji/" + emojiId + ".png");
     
