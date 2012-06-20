@@ -429,14 +429,21 @@ function hidePhotobooth() {
 
 
 function upload(image) {
-    console.log("uploading to emojiId: " + emojiId);
-    
     $.ajax({
       type: 'POST',
       url: "/camera/",
+      dataType: "json",
       data: {"image":canvas.toDataURL("image/png"), "emojiId":emojiId},
       success: function(data, textStatus) {
-  		console.log("server response: " + data + "; " + textStatus);
+          // put the image in place.
+          
+          // first, make an img element for it
+          var newPhoto = $("<img class='session-photo' src='"+data['photoURL']+"'>");
+          
+          // now put the image in the right slot (we'll do animation later)
+          newPhoto.addClass("slot" + (emojiId-1));
+          
+          $("#session-photos").append(newPhoto);
       },
       error: function(data, textStatus) {
     		console.log("FAIL: " + data + "; " + textStatus);

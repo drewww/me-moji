@@ -175,6 +175,7 @@ app.post('/camera/', function(req, res) {
                   });
                   
                   req.end(buf);
+                  res.write('{"photoURL":"http://me-moji.s3.amazonaws.com/' + filename + '"}');
                   res.end();
                   
                   

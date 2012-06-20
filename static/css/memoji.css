@@ -390,6 +390,16 @@ li:nth-child(even) {
     opacity: 0.4;
 }
 
+.session-photo {
+    width: 44px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;
+    
+    position: absolute;
+    z-index: 10;
+}
+
 #session-photos .slot0 {
     left: 0px;
 }
