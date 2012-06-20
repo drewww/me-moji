@@ -140,8 +140,8 @@ app.post('/camera/', function(req, res) {
                       'Content-Type':'image/png'
                   });
                   
-                  s3req.on('response', function(res) {
-                      if(200 == res.statusCode) {
+                  s3req.on('response', function(s3res) {
+                      if(200 == s3res.statusCode) {
                           
                           // do a bunch of redis work here.
                           // 1. increment the id counter
@@ -153,8 +153,8 @@ app.post('/camera/', function(req, res) {
                                   "filename":filename,
                                   "emojiId":emojiId,
                                   "timestamp":timestamp,
-                                  "sessionId":-1}, function (err, res) {
-
+                                  "sessionId":req.session.id},
+                                  function (err, res) {
                                       redis.lpush("emoji:" + emojiId,
                                         filename, function(err, res) {
                                               // limit the number of emoji in
@@ -171,27 +171,26 @@ app.post('/camera/', function(req, res) {
                                   });
 
                           });
+                          
+                          // put this photo in the session so it's tracked per person.
+
+                          if(!(req.session.photos)) {
+                              req.session.photos = [];
+                          }
+
+                          var fullPath = "http://me-moji.s3.amazonaws.com/" + filename;
+
+                          req.session.photos[emojiId] = fullPath;
+
+                          console.log("photos: " + JSON.stringify(req.session.photos));
+
+                          res.write('{"photoURL":"'+fullPath+'"}');
+                          res.end();
+                          
                       }
                   });
                   
                   s3req.end(buf);
-                  
-                  // put this photo in the session so it's tracked per person.
-                  
-                  if(!(req.session.photos)) {
-                      req.session.photos = [];
-                  }
-                  
-                  var fullPath = "http://me-moji.s3.amazonaws.com/" + filename;
-                  
-                  req.session.photos[emojiId] = fullPath;
-                  
-                  console.log("photos: " + JSON.stringify(req.session.photos));
-                  
-                  res.write('{"photoURL":"'+fullPath+'"}');
-                  res.end();
-                  
-                  
               } else {
                   logger.error("Uploaded image failed: " + stdout);
                   
