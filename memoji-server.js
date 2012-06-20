@@ -73,19 +73,19 @@ app.use("/static", express.static(__dirname + '/static'));
 // Setup the index page.
 app.get('/', function(req, res) {
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
-        "camera":false, "initialFocus":"none"}});
+        "camera":false, "initialFocus":"none", "photos":JSON.stringify(req.session.photos)}});
 });
 
 app.get('/browse/:name', function(req, res) {
     var emojiName = req.params.name;
     res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
-        "camera":false, "initialFocus":"none"}});
+        "camera":false, "initialFocus":"none", "photos":JSON.stringify(req.session.photos)}});
 });
 
 app.get('/photo/:filename', function(req, res) {
     var filename = req.params.filename;
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
-        "camera":false, "initialFocus":filename}});
+        "camera":false, "initialFocus":filename, "photos":JSON.stringify(req.session.photos)}});
 });
 
 // render the same site for /camera/
@@ -93,7 +93,7 @@ app.get('/camera/:name', function(req, res) {
     var emojiName = req.params.name;
     
     res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
-        "camera":true, "initialFocus":"none"}});
+        "camera":true, "initialFocus":"none", "photos":JSON.stringify(req.session.photos)}});
 });
 
 
@@ -135,12 +135,12 @@ app.post('/camera/', function(req, res) {
                   // okay, now we're good and trust the image. Upload it
                   // to s3.
                   
-                  var req = s3.put(filename, {
+                  var s3req = s3.put(filename, {
                       'Content-Length':buf.length,
                       'Content-Type':'image/png'
                   });
                   
-                  req.on('response', function(res) {
+                  s3req.on('response', function(res) {
                       if(200 == res.statusCode) {
                           
                           // do a bunch of redis work here.
@@ -174,8 +174,21 @@ app.post('/camera/', function(req, res) {
                       }
                   });
                   
-                  req.end(buf);
-                  res.write('{"photoURL":"http://me-moji.s3.amazonaws.com/' + filename + '"}');
+                  s3req.end(buf);
+                  
+                  // put this photo in the session so it's tracked per person.
+                  
+                  if(!(req.session.photos)) {
+                      req.session.photos = [];
+                  }
+                  
+                  var fullPath = "http://me-moji.s3.amazonaws.com/" + filename;
+                  
+                  req.session.photos[emojiId] = fullPath;
+                  
+                  console.log("photos: " + JSON.stringify(req.session.photos));
+                  
+                  res.write('{"photoURL":"'+fullPath+'"}');
                   res.end();
                   
                   

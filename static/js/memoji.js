@@ -50,6 +50,16 @@ $(document).ready(function() {
     $("#about").hide();
     
     
+    // on load, check the sessionPhotos list to see if this session has
+    // photos we should load in.
+    for(var emojiIdIndex in sessionPhotos) {
+        var url = sessionPhotos[emojiIdIndex];
+        
+        if(url!=null) {
+            addPhotoToSessionGutter(url, emojiIdIndex);
+        }
+    }
+    
     
     if(jQuery.browser.mozilla) {
         sndBeep = new Audio("/static/sounds/beep.ogg");
@@ -435,20 +445,31 @@ function upload(image) {
       dataType: "json",
       data: {"image":canvas.toDataURL("image/png"), "emojiId":emojiId},
       success: function(data, textStatus) {
-          // put the image in place.
           
-          // first, make an img element for it
-          var newPhoto = $("<img class='session-photo' src='"+data['photoURL']+"'>");
-          
-          // now put the image in the right slot (we'll do animation later)
-          newPhoto.addClass("slot" + (emojiId-1));
-          
-          $("#session-photos").append(newPhoto);
+          addPhotoToSessionGutter(data["photoURL"], emojiId-1);
       },
       error: function(data, textStatus) {
     		console.log("FAIL: " + data + "; " + textStatus);
       }
     });
+}
+
+function addPhotoToSessionGutter(url, emojiIdForUrl) {
+    
+    // keep that list up to date.
+    sessionPhotos[emojiIdForUrl] = url;
+    
+    var slotClass = "slot" + (emojiIdForUrl-1);
+    
+    // knock out any other photos in the same slot. 
+    $("#session-photos .session-photo." + slotClass).remove();
+    
+    var newPhoto = $("<img class='session-photo' src='"+url+"'>");
+    
+    // now put the image in the right slot (we'll do animation later)
+    newPhoto.addClass(slotClass);
+    
+    $("#session-photos").append(newPhoto);
 }
 
 function highlight(num) {
