@@ -72,17 +72,23 @@ app.use("/static", express.static(__dirname + '/static'));
 
 // Setup the index page.
 app.get('/', function(req, res) {
+    sessionInit(req);
+    
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
         "camera":false, "initialFocus":"none", "photos":JSON.stringify(req.session.photos)}});
 });
 
 app.get('/browse/:name', function(req, res) {
+    sessionInit(req);
+
     var emojiName = req.params.name;
     res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
         "camera":false, "initialFocus":"none", "photos":JSON.stringify(req.session.photos)}});
 });
 
 app.get('/photo/:filename', function(req, res) {
+    sessionInit(req);
+
     var filename = req.params.filename;
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
         "camera":false, "initialFocus":filename, "photos":JSON.stringify(req.session.photos)}});
@@ -90,6 +96,8 @@ app.get('/photo/:filename', function(req, res) {
 
 // render the same site for /camera/
 app.get('/camera/:name', function(req, res) {
+    sessionInit(req);
+
     var emojiName = req.params.name;
     
     res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
@@ -98,6 +106,8 @@ app.get('/camera/:name', function(req, res) {
 
 
 app.get('/photos/:id', function(req, res) {
+    sessionInit(req);
+
     var emojiId = parseInt(req.params.id);
     
     // fetch it off redis
@@ -203,3 +213,8 @@ app.post('/camera/', function(req, res) {
     
 });
 
+function sessionInit(req) {
+    if(typeof req.session.photos == "undefined") {
+        req.session.photos = [];
+    }
+}
