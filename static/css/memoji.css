@@ -148,10 +148,11 @@ body {
     margin-right: 26px;
     
     border-radius: 80px;
+    box-shadow: 0px 1px 3px #555;
 }
 
 #add-photo:hover {
-    box-shadow: 3px 3px 6px #555;
+    box-shadow: 0px 3px 6px #555;
 }
 
 #add-photo:active {
