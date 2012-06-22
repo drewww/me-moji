@@ -56,6 +56,7 @@ app.listen(port);
 app.use(express.bodyParser());
 app.use(express.errorHandler({ dumpExceptions: true }));
 app.use("/static", express.static(__dirname + '/static'));
+app.use(express.favicon(__dirname + '/static/img/favicon.ico', { maxAge: 2592000000 }));
 
 
 // Setup the index page.
