@@ -50,7 +50,7 @@ if(program.port) {
     port = program.port;
 }
 
-var app = express.createServer();
+var app = express();
 
 app.listen(port);
 app.use(express.bodyParser());
