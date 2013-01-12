@@ -123,7 +123,7 @@ app.post('/camera/', function(req, res) {
           function (error, stdout, stderr) {
               // 1338505175637_6.png PNG 240x240 240x240+0+0 8-bit DirectClass 2.95KB 0.000u 0:00.000
               var resultPieces = stdout.split(" ");
-              logger.debug("identify! " + stdout);
+              logger.info("identify! " + stdout);
               if(resultPieces[1]=="PNG" && resultPieces[2]=="240x240" &&
                 resultPieces[4]=="8-bit") {
                   // okay, now we're good and trust the image. Upload it
@@ -131,7 +131,8 @@ app.post('/camera/', function(req, res) {
                   
                   var req = s3.put(filename, {
                       'Content-Length':buf.length,
-                      'Content-Type':'image/png'
+                      'Content-Type':'image/png',
+                      'x-amz-acl': 'public-read'
                   });
                   
                   req.on('response', function(res) {
@@ -167,13 +168,10 @@ app.post('/camera/', function(req, res) {
                           });
                       }
                   });
-                  
                   req.end(buf);
                   res.end();
-                  
-                  
               } else {
-                  logger.error("Uploaded image failed: " + stdout);
+                  logger.error("Image rejected: " + stdout);
                   
                   // "UNSUPPORTED MEDIA TYPE"
                   res.send(415);
