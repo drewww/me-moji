@@ -85,6 +85,16 @@ body {
     height: 44px;
 }
 
+#about-button img:hover {
+    height: 49px;
+}
+
+#about-button:active {
+    height: 49px;
+    bottom: 10px;
+}
+
+
 .circle {
     width: 160px;
 }
@@ -97,12 +107,31 @@ body {
     height: 160px;
 }
 
+.emoji-container img {
+    cursor: pointer;
+}
+
+.button {
+    cursor: pointer;
+}
+
 .close-button {
     position: absolute;
     top: 10px;
     right: 10px;
     width: 30px;
     cursor: pointer;
+    
+    z-index: 50;
+}
+
+.close-button:hover {
+    width: 34px;
+}
+
+.close-button:active {
+    width: 34px;
+    padding-top: 3px;
 }
 
 .photo-mask {
@@ -119,10 +148,11 @@ body {
     margin-right: 26px;
     
     border-radius: 80px;
+    box-shadow: 0px 1px 3px #555;
 }
 
 #add-photo:hover {
-    box-shadow: 3px 3px 6px #555;
+    box-shadow: 0px 3px 6px #555;
 }
 
 #add-photo:active {
@@ -175,12 +205,12 @@ body {
     top: 50%;
     left: 50%;
     
-    margin-left: -250px;
-    margin-top: -250px;
+    margin-left: -185px;
+    margin-top: -185px;
     
     box-shadow: 3px 3px 3px black;
-    width: 500px;
-    height: 500px;
+    width: 370px;
+    height: 370px;
     padding: 10px;
     
     background-color: white;
@@ -190,20 +220,20 @@ body {
 
 #focus .emoji-photo {
     display: block;
-    width: 400px;
+    width: 330px;
     
-    margin-top: 50px;
-    margin-left: 50px;
+    margin-top: 20px;
+    margin-left: 20px;
     margin-right: 50px;
     margin-bottom: 10px;
 }
 
 #focus .photo-mask {
-    width: 420px;
+    width: 350px;
     position: absolute;
     
-    top: 50px;
-    left: 50px;
+    top: 20px;
+    left: 20px;
 }
 
 img.share {
@@ -214,7 +244,7 @@ img.share {
 }
 
 #focus-footer {
-    margin-top: -10px;
+    margin-top: -40px;
 }
 
 ul {
@@ -284,6 +314,16 @@ li:nth-child(even) {
 	margin-top: 20px;
 }
 
+#capture:hover {
+    width: 75px;
+}
+
+#capture:active {
+    width: 75px;
+    padding-top: 3px;
+}
+
+
 #flash {
 	position:fixed;
 	top:0px;
@@ -297,18 +337,36 @@ li:nth-child(even) {
 
 #review {
     margin-top: 20px;
-    width: 160px;
+    width: 150px;
     margin-left: auto;
     margin-right: auto;
 }
 
 #select, #reject {
 	float: left;
-    width: 70px;
+    width: 60px;
 }
+
+#select:hover, #reject:hover {
+    width: 65px;
+}
+
+#select:hover {
+    margin-right: 15px;
+}
+
+#select:active, #reject:active {
+    width: 65px;
+    padding-top: 3px;
+}
+
 
 #select {
     margin-right: 20px;
+}
+
+#select:active {
+    margin-right: 15px;
 }
 
 .clear {

@@ -57,7 +57,7 @@ if(program.port) {
     port = program.port;
 }
 
-var app = express.createServer();
+var app = express();
 
 app.listen(port);
 
@@ -68,6 +68,7 @@ app.use(express.session({secret:conf["session-secret"],
 app.use(express.bodyParser());
 app.use(express.errorHandler({ dumpExceptions: true }));
 app.use("/static", express.static(__dirname + '/static'));
+app.use(express.favicon(__dirname + '/static/img/favicon.ico', { maxAge: 2592000000 }));
 
 
 // Setup the index page.
@@ -90,8 +91,15 @@ app.get('/photo/:filename', function(req, res) {
     sessionInit(req);
 
     var filename = req.params.filename;
+    
+    // when we're loading photos directly, insert the FB meta tags that help
+    // fb identify the right image to include as the thumbnail. 
+    // see: http://stackoverflow.com/questions/1138460/how-does-facebook-sharer-select-images
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
-        "camera":false, "initialFocus":filename, "photos":JSON.stringify(req.session.photos)}});
+        "camera":false, "initialFocus":filename,
+        "photos":JSON.stringify(req.session.photos),
+        "fbMetaImageURL":"http://me-moji.s3.amazonaws.com/"+filename+".png"}
+    });
 });
 
 // render the same site for /camera/
@@ -147,7 +155,8 @@ app.post('/camera/', function(req, res) {
                   
                   var s3req = s3.put(filename, {
                       'Content-Length':buf.length,
-                      'Content-Type':'image/png'
+                      'Content-Type':'image/png',
+                      'x-amz-acl': 'public-read'
                   });
                   
                   s3req.on('response', function(s3res) {
@@ -192,17 +201,14 @@ app.post('/camera/', function(req, res) {
 
                           req.session.photos[emojiId] = fullPath;
 
-                          console.log("photos: " + JSON.stringify(req.session.photos));
-
                           res.write('{"photoURL":"'+fullPath+'"}');
                           res.end();
                           
                       }
                   });
-                  
                   s3req.end(buf);
               } else {
-                  logger.error("Uploaded image failed: " + stdout);
+                  logger.error("Image rejected: " + stdout);
                   
                   // "UNSUPPORTED MEDIA TYPE"
                   res.send(415);

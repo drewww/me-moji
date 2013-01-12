@@ -75,10 +75,7 @@ $(document).ready(function() {
         aboutShown = true;
     });
     
-    $(".close-button").click(function(event) {
-        if(photoboothShown) hidePhotobooth();
-        else hideFocus();
-    });
+    $(".close-button").click(closeButtonClick);
     
     $(".emoji").click(emojiTabClick);
     
@@ -90,16 +87,7 @@ $(document).ready(function() {
         showPhotobooth();
     });
     
-    $("#logo, #background").click(function() {
-        if(photoboothShown) {
-            hidePhotobooth();
-        } else if(focusShown) {
-            hideFocus();
-        } else if(aboutShown) {
-            hideBackground();
-            $("#about").hide(500);
-        }
-    });
+    $("#logo, #background").click(dismissClick);
     
     // From here down is all camera setup junk, mostly copied from camera.ejs.
     $("#select").click(function(event) {
@@ -144,6 +132,17 @@ $(document).ready(function() {
 	
 });
 
+function dismissClick(event) {
+    if(photoboothShown) {
+        hidePhotobooth();
+    } else if(focusShown) {
+        hideFocus();
+    } else if(aboutShown) {
+        hideBackground();
+        $("#about").hide(500);
+    }
+}
+
 function updateEmojiTabSelect() {
     $(".emoji").removeClass("select");
     $("#gutter").children().each(function() {
@@ -155,6 +154,11 @@ function updateEmojiTabSelect() {
     $("#emoji-example").attr("src", "/static/img/emoji/" + emojiId + ".png");
     
     updateEmojiPhotosForId(emojiId, photoboothShown);
+}
+
+function closeButtonClick(event) {
+        if(photoboothShown) hidePhotobooth();
+        else hideFocus();
 }
 
 function emojiTabClick(event) {
@@ -488,11 +492,15 @@ function setMode(mode) {
 			// show #video
 			$("#image").hide();
 			$("#image-background").hide();
-			
+			$(".close-button").show();
+		    
 			
 			$("#camera").show();
 			$("#countdown").hide();
 			$("#review").hide();
+			
+			$("#logo, #background").click(dismissClick);
+            
 			break;
 		case "COUNTDOWN":
 			// show #video
@@ -502,10 +510,19 @@ function setMode(mode) {
 			$("#camera").hide();
 			$("#countdown").show();
 			$("#review").hide();
+			
+			$(".close-button").hide();
+            
+		    $("#logo, #background").off("click");
+		    $(".emoji").off("click");
+            
 			break;
 		case "REVIEW":
 	        // disable clicking on emoji in review mode.
 		    $(".emoji").off("click");
+		    $(".close-button").hide();
+		    
+		    $("#logo, #background").off("click");
 		    
 			$("#image").show();
 			$("#image-background").show();
