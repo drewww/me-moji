@@ -134,7 +134,12 @@ app.post('/camera/', function(req, res) {
     var timestamp = Date.now();
     
     logger.info("Received camera post!");
-    var filename = timestamp + "_" + emojiId + ".png";
+    
+    // session ids apparently can have '/' characters in them? annoying.
+    // not sure what other evils they might hold.
+    var safeId = req.session.id.replace("/", "-");
+    
+    var filename = safeId + "_" + timestamp + "_" + emojiId + ".png";
     var buf = new Buffer(imgData.match(/,(.+)/)[1],'base64');
     
     // okay, first we're going to write this to a temp file and then
