@@ -155,63 +155,70 @@ app.post('/camera/', function(req, res) {
               logger.debug("identify! " + stdout);
               if(resultPieces[1]=="PNG" && resultPieces[2]=="240x240" &&
                 resultPieces[4]=="8-bit") {
-                  // okay, now we're good and trust the image. Upload it
-                  // to s3.
+                  // now that we trust the image, lets mask it so that it's
+                  // anti-aliased properly. 
                   
-                  var s3req = s3.put(filename, {
-                      'Content-Length':buf.length,
-                      'Content-Type':'image/png',
-                      'x-amz-acl': 'public-read'
-                  });
                   
-                  s3req.on('response', function(s3res) {
-                      if(200 == s3res.statusCode) {
-                          
-                          // do a bunch of redis work here.
-                          // 1. increment the id counter
-                          // 2. make an image:id entry
-                          // 3. push onto the queue
-                          redis.incr("global:nextImageId", function(err,
-                              imageId) {
-                              redis.hmset("image:" + imageId, {
-                                  "filename":filename,
-                                  "emojiId":emojiId,
-                                  "timestamp":timestamp,
-                                  "sessionId":req.session.id},
-                                  function (err, res) {
-                                      redis.lpush("emoji:" + emojiId,
-                                        filename, function(err, res) {
-                                              // limit the number of emoji in
-                                              // that list to 50.
-                                              redis.ltrim("emoji:" + emojiId,
-                                                -50, -1,
-                                                  function(err, res) {
-                                                      logger.debug("\tid: "
-                                                      +imageId+
-                                      " url: http://me-moji.s3.amazonaws.com/"
-                                                      + filename)
-                                                  });
-                                          });
-                                  });
+                  var baseFilename = filename;
+                  filename = "m_" + baseFilename;
+                  var alias = exec('composite -compose CopyOpacity static/img/mask.png /tmp/'
+                    + baseFilename + " /tmp/" + filename, function(error, stdout, stderr) {
+                      
+                      var s3req = s3.put(filename, {
+                          'Content-Length':buf.length,
+                          'Content-Type':'image/png',
+                          'x-amz-acl': 'public-read'
+                      });
+                      
+                      s3req.on('response', function(s3res) {
+                          if(200 == s3res.statusCode) {
+                            
+                              // do a bunch of redis work here.
+                              // 1. increment the id counter
+                              // 2. make an image:id entry
+                              // 3. push onto the queue
+                              redis.incr("global:nextImageId", function(err,
+                                  imageId) {
+                                  redis.hmset("image:" + imageId, {
+                                      "filename":filename,
+                                      "emojiId":emojiId,
+                                      "timestamp":timestamp,
+                                      "sessionId":req.session.id},
+                                      function (err, res) {
+                                          redis.lpush("emoji:" + emojiId,
+                                            filename, function(err, res) {
+                                                  // limit the number of emoji in
+                                                  // that list to 50.
+                                                  redis.ltrim("emoji:" + emojiId,
+                                                    -50, -1,
+                                                      function(err, res) {
+                                                          logger.debug("\tid: "
+                                                          +imageId+
+                                          " url: http://me-moji.s3.amazonaws.com/"
+                                                          + filename)
+                                                      });
+                                              });
+                                      });
 
-                          });
-                          
-                          // put this photo in the session so it's tracked per person.
+                              });
 
-                          if(!(req.session.photos)) {
-                              req.session.photos = [];
+                              // put this photo in the session so it's tracked per person.
+
+                              if(!(req.session.photos)) {
+                                  req.session.photos = [];
+                              }
+
+                              var fullPath = "http://me-moji.s3.amazonaws.com/" + filename;
+
+                              req.session.photos[emojiId] = fullPath;
+
+                              res.write('{"photoURL":"'+fullPath+'"}');
+                              res.end();
+
                           }
-
-                          var fullPath = "http://me-moji.s3.amazonaws.com/" + filename;
-
-                          req.session.photos[emojiId] = fullPath;
-
-                          res.write('{"photoURL":"'+fullPath+'"}');
-                          res.end();
-                          
-                      }
+                      });
+                      s3req.end(buf);
                   });
-                  s3req.end(buf);
               } else {
                   logger.error("Image rejected: " + stdout);
                   
