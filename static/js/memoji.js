@@ -244,7 +244,6 @@ function updateEmojiPhotosForId(newId) {
                 
                 // each element is an image and a mask.
                 var newItem = $("<div class='emoji-container'>\
-<img class='photo-mask circle' src='/static/img/whitemask_ring15.png'>\
 <img class='emoji-photo circle' src="+url+"></div>");
                 
                 if(container.hasClass("first")) {
@@ -255,7 +254,7 @@ function updateEmojiPhotosForId(newId) {
                 
                 // now add a click listener to all of these
                 newItem.click(function() {
-                    showFocus($(this).children()[1].src);
+                    showFocus($(this).children()[0].src);
                 });
             });
             
