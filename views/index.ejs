@@ -6,6 +6,9 @@
 	<script type="text/javascript" charset="utf-8" src="/static/js/lib/jquery-1.7.2.min.js">
 	</script>
 	<script type="text/javascript" src="/static/js/lib/jscam/jquery.webcam.js"></script>
+	
+	<script type="text/javascript" src="/static/js/lib/bootstrap/js/bootstrap.min.js"></script>
+	
 
 	<script type="text/javascript" src="/static/js/memoji.js"></script>
 	
@@ -19,6 +22,9 @@
 	</script>
 	
 	<link rel="stylesheet" href="/static/css/memoji.css" type="text/css" media="screen" charset="utf-8">
+
+	<link rel="stylesheet" href="/static/js/lib/bootstrap/css/bootstrap.min.css" type="text/css" media="screen" charset="utf-8">
+
 
 	<script type="text/javascript">
 	  var _gaq = _gaq || [];
@@ -50,7 +56,7 @@
 <div id="container">
 
 	<div id="focus">
-		<img class="close-button" src="/static/img/Xemoji.png">
+		<img class="close-button tt" src="/static/img/Xemoji.png" data-original-title="close">
 		<img class="photo-mask circle" src="/static/img/whitemask_ring15.png">
 		<img class="emoji-photo" src="">
 		<div id="focus-footer"></div>
@@ -81,7 +87,7 @@
 <div id="content">
 
 <div id="photobooth">
-	<img class="close-button button" src="/static/img/Xemoji.png" alt="close" title="close">
+	<img class="close-button button tt" src="/static/img/Xemoji.png" data-original-title="close" title="close">
 
 	<div id="camera-container">
 		<div id="video"></div>
@@ -99,12 +105,12 @@
 		</div>
 	
 		<div id="camera">
-		<img id="capture" src="/static/img/camera.png">
+		<img id="capture" class="tt" src="/static/img/camera.png" data-original-title="take a picture!">
 		</div>
 	
 <div id="review">
-	<img class="button" id="select" src="/static/img/yes.png" alt="accept photo" title="accept photo">
-	<img class="button" id="reject" src="/static/img/no.png" alt="re-take photo" title="re-take photo">
+	<img class="button tt" id="reject" src="/static/img/no.png" data-original-title="re-take photo" title="re-take photo">
+	<img class="button tt" id="select" src="/static/img/yes.png" data-original-title="accept photo" title="accept photo">
 </div>
 
 		<br class="clear">
@@ -134,7 +140,7 @@
 </div>
 
 <ul id="all-photos">
-<li class="first"><img id="add-photo" class="circle" src="/static/img/silhouette.png"></li>
+<li class="first"><img id="add-photo" class="circle tt" src="/static/img/silhouette.png" data-original-title="Add your face!"></li>
 </ul>
 
 <div id="about">
@@ -144,7 +150,7 @@
 </div>
 
 <div id="about-button">
-<img src="/static/img/lightbulb.png">
+<img src="/static/img/lightbulb.png" class="tt" data-original-title="more info" data-placement="top">
 </div>
 
 </div>

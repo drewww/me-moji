@@ -20,6 +20,8 @@ var emojiNames = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
 
 $(document).ready(function() {
     
+    $(".tt").tooltip({placement:"bottom"});
+    
     // check if we've got an emojiname from the server.
     var pickRandomName = true;
     if(emojiName!="none") {
