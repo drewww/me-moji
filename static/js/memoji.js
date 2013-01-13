@@ -330,21 +330,40 @@ function initializeWebcam() {
 			highlight(countdown);
 			countdown--;
 		},
+		
+		// this method is called once for each row of image data.
+		// the udpated .swf that flips the camera when in live view doesn't
+		// flip the response, and it's double scaled: 640x480 when we really want
+		// 320x240. So in this method we downscale by skipping every other row
+		// and every other column. 
 		onSave: function(data) {
-			var col = data.split(";");
+		  
+		  if(rowCount%2==0) {
+		    rowCount++;
+		    return;
+		  }
+		  
+		  var col = data.split(";"),
+      img = image;
+      col.reverse();
+      
+      
 			var img = image;
-			for(var i = 40; i < 280; i++) {
-				// first check and see if we're within the circle.
-				// if we aren't, set it to white + full alpha
+			
+			// skip the first bunch of columns because we know they're outside
+			// our target circle. Jump by 2s because we're downscaling from 640x480.
+			for(var i = 80; i < 560; i=i+2) {
 				
 				var x = i;
 				var y = rowCount;
 				var alpha = 0xff;
-				
-                var distance = Math.sqrt(Math.pow(x-160, 2)+Math.pow(y-120, 2));
-                if(distance>123) {
-                    alpha = 0x00;
-                } 
+        
+        // check to see if we're within the circle. This filters the images
+        
+        var distance = Math.sqrt(Math.pow(x-320, 2)+Math.pow(y-240, 2));
+        if(distance>240) {
+            alpha = 0x00;
+        } 
 				
 				var tmp = parseInt(col[i]);
 				img.data[pos + 0] = (tmp >> 16) & 0xff;
@@ -386,7 +405,7 @@ function initializeWebcam() {
 			webcam.save();
 		},
 		debug: function(type, string) {
-            if ( string == 'Camera started' ){
+            if ( string == 'camera-started' ){
                 // at this point, turn on the images for overlay.
                 $("#emoji-example").show().animate({opacity:1.0}, 250);
                 $("#mask").show();
