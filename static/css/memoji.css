@@ -341,13 +341,12 @@ li:nth-child(even) {
 
 #review {
     margin-top: 20px;
-    width: 150px;
+    width: 200px;
     margin-left: auto;
     margin-right: auto;
 }
 
 #select, #reject {
-	float: left;
     width: 60px;
 }
 
@@ -355,18 +354,17 @@ li:nth-child(even) {
     width: 65px;
 }
 
-#select:hover {
-    margin-right: 15px;
+#select {
+  float: right;
+}
+
+#reject {
+  float: left;
 }
 
 #select:active, #reject:active {
     width: 65px;
     padding-top: 3px;
-}
-
-
-#select {
-    margin-right: 20px;
 }
 
 #select:active {
