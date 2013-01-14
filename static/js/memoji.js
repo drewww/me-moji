@@ -22,6 +22,10 @@ $(document).ready(function() {
     
     $(".tt").tooltip({placement:"bottom"});
     
+    repositionAutoMarginDiv("#container");
+    repositionAutoMarginDiv("#camera-container");
+
+    
     // check if we've got an emojiname from the server.
     var pickRandomName = true;
     if(emojiName!="none") {
@@ -422,6 +426,10 @@ function initializeWebcam() {
         $("#no-camera-modal").modal();
       }
       
+      // this doesn't seem stricly necessary to fix firefox's issues
+      // with the masking, but leaving it here in case it becomes
+      // an issue later. wmode can have lots of weird effects.
+      // $("#XwebcamXobjectX").append('<param name="wmode" value="transparent"/>');
 		}
 	});
 	
@@ -560,6 +568,27 @@ function setMode(mode) {
 			$("#review").show();
 			break;
 	}
+}
+
+// PER http://stackoverflow.com/questions/3003724/cant-click-allow-button-in-flash-on-firefox
+
+function repositionAutoMarginDiv(id) {
+  // this routine is a complete hack to work around the flash "Allow" button bug
+  if ( $(id).length > 0 ) {
+    //Adjust the left-margin, since by default it likely isn't an int
+    setLeftMargin(id);
+    //If the User resizes the window, adjust the #content left-margin
+    $(window).bind("resize", function() { setLeftMargin(id); });
+  }
+}
+
+function setLeftMargin(id) {
+  var newWindowWidth = $(id).parent().width();
+  var mainWellWidth = $(id).width();
+  // create an integer based left_offset number
+  var left_offset = parseInt((newWindowWidth - mainWellWidth)/2.0);
+  if (left_offset < 0) { left_offset = 0; }
+  $(id).css("margin-left", left_offset);
 }
 
 
