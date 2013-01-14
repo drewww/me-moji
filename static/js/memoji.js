@@ -413,7 +413,15 @@ function initializeWebcam() {
             }
 		},
 		onLoad: function() {
-			console.log("load");
+      // check and see if we have a camera available:
+      var cameras = webcam.getCameraList();
+      
+      if(cameras.length==0) {
+        // we have no camera!
+        // throw up a dialog to that effect.
+        $("#no-camera-modal").modal();
+      }
+      
 		}
 	});
 	
