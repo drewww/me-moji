@@ -365,12 +365,8 @@ li:nth-child(even) {
 }
 
 #select:active, #reject:active {
-    width: 65px;
+    width: 55px;
     padding-top: 3px;
-}
-
-#select:active {
-    margin-right: 15px;
 }
 
 .clear {
