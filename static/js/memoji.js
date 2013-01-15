@@ -343,10 +343,9 @@ function initializeWebcam() {
 		mode: "callback",
 		swffile: "/static/js/lib/jscam/jscam.swf",
 		onTick: function() {
-		    
 		    if(sndBeep!=null) {
     		    sndBeep.currentTime = 0;
-                sndBeep.play();
+            sndBeep.play();
 		    }
 		    
 			highlight(countdown);
@@ -406,6 +405,7 @@ function initializeWebcam() {
 			rowCount++;
 		},
 		onCapture: function() {
+		  console.log("CAPTURE");
 			jQuery("#flash").css("display", "block");
 			jQuery("#flash").fadeOut("fast", function () {
 				jQuery("#flash").css("opacity", 1);
@@ -428,19 +428,19 @@ function initializeWebcam() {
 		},
 		debug: function(type, string) {
 		  console.log("debug " + type + "; string");
-            if ( string == 'camera-started' ){
-                // at this point, turn on the images for overlay.
-                $("#emoji-example").show().animate({opacity:1.0}, 250);
-                $("#mask").show();
-            } else if(string == 'no-camera-detected') {
-              console.log("no camera");
-              $("#no-camera-modal").modal();
-              
-              // also dismiss camera view and disable the camera button
-              hidePhotobooth();
-              
-              // deregister the click method on the photo buttns?
-            }
+      if ( string == 'camera-started' ){
+          // at this point, turn on the images for overlay.
+          $("#emoji-example").show().animate({opacity:1.0}, 250);
+          $("#mask").show();
+      } else if(string == 'no-camera-detected') {
+        console.log("no camera");
+        $("#no-camera-modal").modal();
+        
+        // also dismiss camera view and disable the camera button
+        hidePhotobooth();
+        
+        // deregister the click method on the photo buttns?
+      }
 		},
 		onLoad: function() {
       // this fires after the camera permissions have been accepted by
@@ -564,16 +564,16 @@ function setMode(mode) {
 			
 			$(".close-button").hide();
             
-		    $("#logo, #background").off("click");
-		    $(".emoji").off("click");
+		  $("#logo, #background").off("click");
+		  $(".emoji").off("click");
             
 			break;
 		case "REVIEW":
 	        // disable clicking on emoji in review mode.
-		    $(".emoji").off("click");
-		    $(".close-button").hide();
-		    
-		    $("#logo, #background").off("click");
+	    $(".emoji").off("click");
+	    $(".close-button").hide();
+	    
+	    $("#logo, #background").off("click");
 		    
 			$("#image").show();
 			$("#image-background").show();
