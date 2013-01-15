@@ -10,13 +10,15 @@ var focusShown = false;
 var webcamInitialized = false;
 var aboutShown = false;
 
-var sndBeep;
-var sndShutter;
+var sndBeep = null;
+var sndShutter = null;
 
 // the initial none is because emoji id are 1 based right now
 var emojiNames = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
     "relieved", "grin", "tongue", "unamused", "smirk", "pensive",
     "confounded", "crying", "tears", "astonished", "scream", "pout", "cat"];
+
+
 
 $(document).ready(function() {
     
@@ -70,6 +72,12 @@ $(document).ready(function() {
     if(jQuery.browser.mozilla) {
         sndBeep = new Audio("/static/sounds/beep.ogg");
         sndShutter = new Audio("/static/sounds/shutter.ogg");
+    } else if(jQuery.browser.msie){
+      if(jQuery.browser.version<8) {
+        console.log("in IE < 8");
+      } else {
+        console.log("in IE > 8");
+      }
     } else {
         sndBeep = new Audio("/static/sounds/beep.m4a");
         sndShutter = new Audio("/static/sounds/shutter.m4a");
@@ -203,11 +211,19 @@ function updateURLForEmojiId(emojiId, camera) {
     
     url = url + emojiNames[emojiId];
     
-    history.pushState({}, "", url);
+    if(jQuery.browser.msie) {
+      console.log("skipping msie pushstate");
+    } else {
+      history.pushState({}, "", url);
+    }
 }
 
 function updateURLForFocus(filename) {
+  if(jQuery.browser.msie) {
+    console.log("skipping msie pushstate");
+  } else {
     history.pushState({}, "", "/photo/" + filename.split(".")[0]);
+  }
 }
 
 function updateEmojiPhotosForId(newId) {
@@ -231,6 +247,7 @@ function updateEmojiPhotosForId(newId) {
                 
                 // figure out our container first. get the last child of
                 // #all-photos and see how many children IT has.
+                console.log("url: " + url);
                 
                 var container = $("#all-photos li:last-child");
                 
@@ -410,22 +427,22 @@ function initializeWebcam() {
 			webcam.save();
 		},
 		debug: function(type, string) {
+		  console.log("debug " + type + "; string");
             if ( string == 'camera-started' ){
                 // at this point, turn on the images for overlay.
                 $("#emoji-example").show().animate({opacity:1.0}, 250);
                 $("#mask").show();
+            } else if(string == 'no-camera-detected') {
+              console.log("no camera");
+              $("#no-camera-modal").modal();
+              
+              // also dismiss camera view and disable the camera button
+              hidePhotobooth();
+              
+              
             }
 		},
 		onLoad: function() {
-      // check and see if we have a camera available:
-      var cameras = webcam.getCameraList();
-      
-      if(cameras.length==0) {
-        // we have no camera!
-        // throw up a dialog to that effect.
-        $("#no-camera-modal").modal();
-      }
-      
       // this doesn't seem stricly necessary to fix firefox's issues
       // with the masking, but leaving it here in case it becomes
       // an issue later. wmode can have lots of weird effects.
