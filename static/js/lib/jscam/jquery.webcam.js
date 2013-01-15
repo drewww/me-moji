@@ -24,6 +24,8 @@
 
 	swffile: "jscam.swf",
 	quality: 85,
+	
+	wmode: "opaque",
 
 	debug:	    function () {},
 	onCapture:  function () {},
@@ -44,7 +46,7 @@
 	    }
 	}
 
-	var source = '<object id="XwebcamXobjectX" type="application/x-shockwave-flash" data="'+webcam.swffile+'" width="'+webcam.width+'" height="'+webcam.height+'"><param name="movie" value="'+webcam.swffile+'" /><param name="FlashVars" value="mode='+webcam.mode+'&amp;quality='+webcam.quality+'" /><param name="allowScriptAccess" value="always" /></object>';
+	var source = '<object id="XwebcamXobjectX" type="application/x-shockwave-flash" data="'+webcam.swffile+'" width="'+webcam.width+'" height="'+webcam.height+'"><param name="movie" value="'+webcam.swffile+'" /><param name="FlashVars" value="mode='+webcam.mode+'&amp;quality='+webcam.quality+'" /><param name="allowScriptAccess" value="always" /><param name="wmode" value="'+webcam.wmode + '" /></object>';
 
 	if (null !== webcam.extern) {
 	    $(webcam.extern)[webcam.append ? "append" : "html"](source);

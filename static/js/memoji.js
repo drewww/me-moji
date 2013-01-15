@@ -439,14 +439,12 @@ function initializeWebcam() {
               // also dismiss camera view and disable the camera button
               hidePhotobooth();
               
-              
+              // deregister the click method on the photo buttns?
             }
 		},
 		onLoad: function() {
-      // this doesn't seem stricly necessary to fix firefox's issues
-      // with the masking, but leaving it here in case it becomes
-      // an issue later. wmode can have lots of weird effects.
-      // $("#XwebcamXobjectX").append('<param name="wmode" value="transparent"/>');
+      // this fires after the camera permissions have been accepted by
+      // the user. Nothing particular to do at this point.
 		}
 	});
 	
