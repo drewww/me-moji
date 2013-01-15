@@ -19,6 +19,12 @@
 		var initialFocus = '<%=initialFocus%>';
 		var sessionPhotos = <%-photos%>;
 		
+		/* Deal with IE not having console.log */
+	    if (typeof console === "undefined" || typeof console.log === "undefined") {
+	     console = {};
+	     console.log = function() {};
+	   }
+		
 	</script>
 	
 	<link rel="stylesheet" href="/static/css/memoji.css" type="text/css" media="screen" charset="utf-8">
