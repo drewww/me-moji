@@ -627,7 +627,8 @@ function setupTwitter(d, s, id){
 // special script tag each time and force a re-run. This is probably heinously
 // slow but I haven't figured out an alternative method yet.
 
-$("#" + id).remove();
+$(".twitter-share-button").remove();
+// $("#" + id).remove();
 
 var js,fjs=d.getElementsByTagName(s)[0];
 
