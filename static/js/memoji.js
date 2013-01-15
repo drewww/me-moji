@@ -13,6 +13,8 @@ var aboutShown = false;
 var sndBeep = null;
 var sndShutter = null;
 
+var curUrl;
+
 // the initial none is because emoji id are 1 based right now
 var emojiNames = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
     "relieved", "grin", "tongue", "unamused", "smirk", "pensive",
@@ -21,6 +23,8 @@ var emojiNames = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
 
 
 $(document).ready(function() {
+    
+    curUrl = document.URL;
     
     $(".tt").tooltip({placement:"bottom"});
     
@@ -211,8 +215,11 @@ function updateURLForEmojiId(emojiId, camera) {
     
     url = url + emojiNames[emojiId];
     
+    // track the current URL in a separate field so when we share on tw/fb,
+    // we share the right link.
     if(jQuery.browser.msie) {
       console.log("skipping msie pushstate");
+      curUrl = url;
     } else {
       history.pushState({}, "", url);
     }
@@ -221,6 +228,7 @@ function updateURLForEmojiId(emojiId, camera) {
 function updateURLForFocus(filename) {
   if(jQuery.browser.msie) {
     console.log("skipping msie pushstate");
+    curUrl = url;
   } else {
     history.pushState({}, "", "/photo/" + filename.split(".")[0]);
   }
@@ -295,16 +303,27 @@ function showFocus(photoUrl) {
     // insert the right picture into the dialog box
     $("#focus img.emoji-photo").attr("src", photoUrl);
     
-    
     // add in the like buttons for facebook and twitter to #focus-footer
     $("#focus-footer").empty();
     
-    var facebook = $('<div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div>');
-    var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-href="http://me-moji.com/" data-text="A cute me-moji face!" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>')
+    var urlToShare;
+    
+    if(jQuery.browser.msie) {
+      urlToShare = curUrl;
+    } else {
+      urlToShare = document.URL;
+    }
+    
+    var facebook = $('<div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-href="'+urlToShare+'"></div>');
+    
+    var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-url="'+urlToShare+'" data-text="My cute me-moji face!" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>')
     
     setupFacebook(document, 'script', 'facebook-jssdk');
     setupTwitter(document, "script", "twitter-wjs");
     
+    
+    // not totally sure why we add these after doing setup, but it seems to
+    // work so we'll roll with it.
     $("#focus-footer").append(twitter);
     $("#focus-footer").append(facebook)
     
@@ -629,6 +648,7 @@ function setupTwitter(d, s, id){
 
 $(".twitter-share-button").remove();
 // $("#" + id).remove();
+
 
 var js,fjs=d.getElementsByTagName(s)[0];
 
