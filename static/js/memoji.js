@@ -219,18 +219,19 @@ function updateURLForEmojiId(emojiId, camera) {
     // we share the right link.
     if(jQuery.browser.msie) {
       console.log("skipping msie pushstate");
-      curUrl = url;
+      curUrl = document.URL + url;
     } else {
       history.pushState({}, "", url);
     }
 }
 
 function updateURLForFocus(filename) {
+  var url = "/photo/" + filename.split(".")[0];
   if(jQuery.browser.msie) {
     console.log("skipping msie pushstate");
-    curUrl = url;
+    curUrl = document.URL + url;
   } else {
-    history.pushState({}, "", "/photo/" + filename.split(".")[0]);
+    history.pushState({}, "", url);
   }
 }
 
@@ -316,7 +317,9 @@ function showFocus(photoUrl) {
     
     var facebook = $('<div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-href="'+urlToShare+'"></div>');
     
-    var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-url="'+urlToShare+'" data-text="My cute me-moji face!" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>')
+    var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-url="'+urlToShare+'" data-text="Check out my cute me-moji face!" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>');
+    
+    console.log("urlToShare: " + urlToShare);
     
     setupFacebook(document, 'script', 'facebook-jssdk');
     setupTwitter(document, "script", "twitter-wjs");
