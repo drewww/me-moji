@@ -10,6 +10,7 @@
 		"knox":"*",
 		"redis":"*",
 		"connect-redis":"*",
-		"connect":"*"
+		"connect":"*",
+		"request":"*"
 	}
 }

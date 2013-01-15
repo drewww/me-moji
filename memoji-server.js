@@ -6,6 +6,8 @@ var express = require('express'),
     redis_lib = require('redis'),
     knox = require('knox'),
     RedisStore = require('connect-redis')(express),
+    http = require('http'),
+    request = require('request'),
     exec = require('child_process').exec;
 
 
@@ -211,6 +213,20 @@ app.post('/camera/', function(req, res) {
                               var fullPath = "http://me-moji.s3.amazonaws.com/" + filename;
 
                               req.session.photos[emojiId] = fullPath;
+                              
+                              // check if all the emojiId have a path.
+                              // we can't just look at lenght because if
+                              // you have just the last emojiId, it inserts
+                              // nulls in the rest because emojiId is an int
+                              // not a string. 
+                              var listWithEntries = _.filter(
+                                req.session.photos, function(item) {
+                                  return !_.isNull(item);
+                                });
+                              
+                              if(listWithEntries.length >= 5) {
+                                generateContactSheet(listWithEntries);
+                              }
 
                               res.write('{"photoURL":"'+fullPath+'"}');
                               res.end();
@@ -230,6 +246,54 @@ app.post('/camera/', function(req, res) {
     });
     
 });
+
+function generateContactSheet(photoUrls) {
+  logger.info("GENERATING CONTACT SHEET: " + JSON.stringify(photoUrls));
+  
+  // 1. Download all the photos locally. They may have been taken on any
+  //    server instance at any time so we need to make sure we have copies.
+  //    We can optimize a little by checking to see if the file names are
+  //    on our path already.
+  
+  
+  var numChecked = 0;
+  
+  var checkFinished = function() {
+    numChecked++;
+    logger.info("checkfinished: " + numChecked + " (target: " + photoUrls.length + ")");
+    if(numChecked==photoUrls.length) {
+      
+      // do the actual IM compositing here.
+      logger.info("DO COMPOSITING NOW");
+    }
+  }
+  
+  _.each(photoUrls, function(photoUrl) {
+    logger.info("processing photoUrl: " + photoUrl);
+    var pieces = photoUrl.split("/");
+    
+    var filename = pieces[pieces.length-1];
+    
+    fs.stat("/tmp/" + filename, function(err, stats) {
+      if(!_.isNull(stats) && !_.isUndefined(stats)) {
+        logger.info("Found existing file: " + filename);
+        checkFinished();
+      } else {
+        // download the file.
+        logger.info("Missing: " + filename);
+        
+        var r = request(photoUrl)
+          .pipe(fs.createWriteStream("/tmp/"+filename));
+          
+        r.on("close", function() {
+          logger.info("Downloaded: " + filename);
+          checkFinished();
+        });
+      }
+    });
+  });
+  
+}
 
 function sessionInit(req) {
     if(typeof req.session.photos == "undefined") {
