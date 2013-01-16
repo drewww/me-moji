@@ -265,6 +265,32 @@ function generateContactSheet(photoUrls) {
       
       // do the actual IM compositing here.
       logger.info("DO COMPOSITING NOW");
+      
+      // compositing is just another IM command. 
+      // in all its usual torturous glory:
+      // montage [images] -mode concatenate -tile 5x4 -geometry 240x240+10+10 out.png
+      
+      // this is a little cross to side-effect out of the map, but...
+      var sessionId;
+      
+      var photoPaths = _.map(photoUrls, function(photoUrl) {
+        var pieces = photoUrl.split("/");
+        var filename = pieces[pieces.length-1];
+        sessionId = filename.split("_")[1];
+        
+        return "/tmp/" + filename;
+      });
+      
+      photoPaths.push("static/img/logomedium.png");
+      
+      var child = exec('montage ' + photoPaths.join(" ") + " -mode concatenate -tile 5x4 -geometry 240x240+10+10 /tmp/" + sessionId + "_set.png",
+        function(err, stdout, stderr) {
+          logger.info("composite image generated!");
+          
+          // now upload to server...
+          
+        });
+      
     }
   }
   
