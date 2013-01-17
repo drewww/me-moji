@@ -285,14 +285,6 @@ function generateContactSheet(photoUrls) {
       
       var child = exec('montage ' + photoPaths.join(" ") + " -mode concatenate -tile 5x4 -geometry 240x240+10+10 -", {encoding: 'binary', maxBuffer:5000*1024},
         function(err, stdout, stderr) {
-          logger.info("composite image generated err: " + err);
-          logger.info("stderr: " + stderr);
-          logger.info("stdout: "+ stdout.length);
-          
-          fs.writeFileSync("/tmp/test_montage.png", stdout, 'binary');
-          
-          logger.info("wrote file");
-          logger.info("about to send data...");
           
           var progress = s3.putBuffer(new Buffer(stdout, 'binary'), "set_" + sessionId + ".png", {
             'Content-Length':stdout.length,
