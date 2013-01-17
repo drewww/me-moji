@@ -139,7 +139,7 @@ app.post('/camera/', function(req, res) {
     
     // session ids apparently can have '/' characters in them? annoying.
     // not sure what other evils they might hold.
-    var safeId = req.session.id.replace("/", "-");
+    var safeId = sanitizeSessionId(req.session.id);
     
     var filename = safeId + "_" + timestamp + "_" + emojiId + ".png";
     var buf = new Buffer(imgData.match(/,(.+)/)[1],'base64');
@@ -159,7 +159,6 @@ app.post('/camera/', function(req, res) {
                 resultPieces[4]=="8-bit") {
                   // now that we trust the image, lets mask it so that it's
                   // anti-aliased properly. 
-                  
                   
                   var baseFilename = filename;
                   filename = "m_" + baseFilename;
@@ -185,7 +184,8 @@ app.post('/camera/', function(req, res) {
                                       "filename":filename,
                                       "emojiId":emojiId,
                                       "timestamp":timestamp,
-                                      "sessionId":req.session.id},
+                                      "sessionId":
+                                          sanitizeSessionId(req.session.id)},
                                       function (err, res) {
                                           redis.lpush("emoji:" + emojiId,
                                             filename, function(err, res) {
@@ -276,20 +276,41 @@ function generateContactSheet(photoUrls) {
       var photoPaths = _.map(photoUrls, function(photoUrl) {
         var pieces = photoUrl.split("/");
         var filename = pieces[pieces.length-1];
-        sessionId = filename.split("_")[1];
+        sessionId = sanitizeSessionId(filename.split("_")[1]);
         
         return "/tmp/" + filename;
       });
       
       photoPaths.push("static/img/logomedium.png");
       
-      var child = exec('montage ' + photoPaths.join(" ") + " -mode concatenate -tile 5x4 -geometry 240x240+10+10 /tmp/" + sessionId + "_set.png",
+      var child = exec('montage ' + photoPaths.join(" ") + " -mode concatenate -tile 5x4 -geometry 240x240+10+10 -", {maxBuffer:5000*1024},
         function(err, stdout, stderr) {
-          logger.info("composite image generated!");
+          logger.info("composite image generated: " + err);
+          logger.info("stdout: "+ stdout.length);
+            
+          var s3req = s3.put("set_" + sessionId + ".png", {
+            'Content-Length':stdout.length,
+            'Content-Type':'image/png',
+            'x-amz-acl': 'public-read'
+          });
           
-          // now upload to server...
+          logger.info("s3 req created");
           
-        });
+          s3req.on('response', function(s3res) {
+            logger.info("response: " + s3res.statusCode);
+            if(200 == s3res.statusCode) {
+              logger.info("Uploaded file successfully!");
+              logger.info("url: http://me-moji.s3.amazonaws.com/set_" +
+                sessionId + ".png");
+            }
+          });
+          
+          logger.info("about to send data...");
+          
+          s3req.end(stdout);
+          
+          logger.info("should be sending data now...")
+      });
       
     }
   }
@@ -325,4 +346,8 @@ function sessionInit(req) {
     if(typeof req.session.photos == "undefined") {
         req.session.photos = [];
     }
+}
+
+function sanitizeSessionId(sessionId) { 
+  return sessionId.replace("/", "").replace("+", "").replace("_", ""); 
 }
