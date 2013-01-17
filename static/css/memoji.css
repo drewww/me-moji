@@ -204,7 +204,9 @@ body {
     
     top: 50%;
     left: 50%;
-    
+}
+
+#focus.photo {
     margin-left: -185px;
     margin-top: -185px;
     
@@ -218,7 +220,7 @@ body {
     border: 1px solid #aaa;
 }
 
-#focus .emoji-photo {
+#focus.photo .main {
     display: block;
     width: 330px;
     
@@ -228,13 +230,16 @@ body {
     margin-bottom: 10px;
 }
 
-#focus .photo-mask {
-    width: 350px;
-    position: absolute;
+#focus.set .main {
+    display: block;
+    width: 500px;
     
-    top: 20px;
-    left: 20px;
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 50px;
+    margin-bottom: 10px;
 }
+
 
 img.share {
     height: 44px;

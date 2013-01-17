@@ -41,9 +41,15 @@ $(document).ready(function() {
         } // otherwise, cascade down below and randomize the id.
         
     } else if(initialFocus !="none") {
+      
+      if(focusType=="photo") {
         initialFocus += ".png";
         pickRandomName = false;
         emojiId = parseInt(initialFocus.slice(14, 16));
+      } else if(focusType=="set") {
+        console.log("FOCUSING ON A SET: " + initialFocus);
+        
+      }
     } 
     
     if(pickRandomName) {
@@ -143,7 +149,7 @@ $(document).ready(function() {
     if(initialCamera) {
         showPhotobooth();
     } else if(initialFocus!="none"){
-        showFocus("http://me-moji.s3.amazonaws.com/" + initialFocus);
+        showFocus("http://me-moji.s3.amazonaws.com/" + initialFocus, focusType);
     } else {
         updateURLForEmojiId(emojiId);
     }
@@ -284,7 +290,7 @@ function updateEmojiPhotosForId(newId) {
                 
                 // now add a click listener to all of these
                 newItem.click(function() {
-                    showFocus($(this).children()[0].src);
+                    showFocus($(this).children()[0].src, 'photo');
                 });
             });
             
@@ -297,12 +303,18 @@ function updateEmojiPhotosForId(newId) {
 
 
 // photo ids are the filenames on S3 - timestamp+emojiId
-function showFocus(photoUrl) {
+function showFocus(photoUrl, type) {
     showBackground();
     updateURLForFocus(photoUrl.split("/")[3]);
     
+    $("#focus").removeClass("photo");
+    $("#focus").removeClass("set");
+    
+    $("#focus").addClass(type);
+
+    
     // insert the right picture into the dialog box
-    $("#focus img.emoji-photo").attr("src", photoUrl);
+    $("#focus img.main").attr("src", photoUrl);
     
     // add in the like buttons for facebook and twitter to #focus-footer
     $("#focus-footer").empty();
