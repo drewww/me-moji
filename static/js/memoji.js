@@ -326,20 +326,25 @@ function showFocus(photoUrl, type) {
       urlToShare = document.URL;
     }
     
-    var facebook = $('<div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-href="'+urlToShare+'"></div>');
     
-    var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-url="'+urlToShare+'" data-text="Check out my cute me-moji face!" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>');
     
-    console.log("urlToShare: " + urlToShare);
+    // DISABLING FB/TW for now because they're a hassle and not really
+    // blocking. Will come back to this for v1.1
+    // var facebook = $('<div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-href="'+urlToShare+'"></div>');
     
-    setupFacebook(document, 'script', 'facebook-jssdk');
-    setupTwitter(document, "script", "twitter-wjs");
+    // var twitter = $('<a href="https://twitter.com/share" class="twitter-share-button" data-url="'+urlToShare+'" data-text="Check out my cute me-moji face!" data-via="memoji" data-hashtags="memoji" data-dnt="true">Tweet</a>');
+    
+    // console.log("urlToShare: " + urlToShare);
+    
+    
+    // setupFacebook(document, 'script', 'facebook-jssdk');
+    // setupTwitter(document, "script", "twitter-wjs");
     
     
     // not totally sure why we add these after doing setup, but it seems to
     // work so we'll roll with it.
-    $("#focus-footer").append(twitter);
-    $("#focus-footer").append(facebook)
+    // $("#focus-footer").append(twitter);
+    // $("#focus-footer").append(facebook)
     
     // pull up a dialog box 
     $("#focus").show(500);

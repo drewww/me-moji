@@ -259,6 +259,9 @@ img.share {
 
 #focus-footer {
     margin-top: -5px;
+    
+    /* Not displaying these for now at all! Will re-enable for v1.1 */
+    display: none;
 }
 
 .fb-like {
