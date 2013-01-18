@@ -355,7 +355,7 @@ function showFocus(photoUrl, type) {
         setTimeout(function() {
           
           $("#focus img.main").attr("src", photoUrl);
-        }, 500);
+        }, 1500);
         $("#focus img.main").attr("src", photoUrl);
 
       });
@@ -380,7 +380,11 @@ function hideFocus() {
 }
 
 function showBackground() {
-    $("#background").show().animate({opacity: "0.5"}, 500, "linear");
+    $("#background").show().animate({opacity: "0.5"}, 500, "linear", function() {
+      // this is a stupid hack to deal with the situation when show is 
+      // called within 500ms of hide.
+      $(this).show();
+    });
 }
 
 function hideBackground() {

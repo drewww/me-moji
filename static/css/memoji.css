@@ -242,6 +242,7 @@ body {
 #focus.set .main {
     display: block;
     width: 600px;
+    height: 480px;
     
     margin-top: 20px;
     margin-left: 20px;
