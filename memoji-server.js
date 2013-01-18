@@ -249,7 +249,7 @@ app.post('/camera/', function(req, res) {
                                 });
                               
                               if(listWithEntries.length >= 19) {
-                                generateContactSheet(listWithEntries);
+                                generateContactSheet(listWithEntries, timestamp);
                               }
 
                               res.write('{"photoURL":"'+fullPath+'"}');
@@ -271,8 +271,8 @@ app.post('/camera/', function(req, res) {
     
 });
 
-function generateContactSheet(photoUrls) {
-  logger.info("GENERATING CONTACT SHEET: " + JSON.stringify(photoUrls));
+function generateContactSheet(photoUrls, timestamp) {
+  logger.info("GENERATING CONTACT SHEET: " + JSON.stringify(photoUrls) + " for timestamp " + timestamp);
   
   // 1. Download all the photos locally. They may have been taken on any
   //    server instance at any time so we need to make sure we have copies.
@@ -310,7 +310,7 @@ function generateContactSheet(photoUrls) {
       var child = exec('montage ' + photoPaths.join(" ") + " -mode concatenate -tile 5x4 -geometry 240x240+10+10 -", {encoding: 'binary', maxBuffer:5000*1024},
         function(err, stdout, stderr) {
           
-          var progress = s3.putBuffer(new Buffer(stdout, 'binary'), "set_" + sessionId + ".png", {
+          var progress = s3.putBuffer(new Buffer(stdout, 'binary'), "set_" + sessionId + "_"+timestamp+".png", {
             'Content-Length':stdout.length,
             'Content-Type':'image/png',
             'x-amz-acl': 'public-read'
@@ -319,7 +319,7 @@ function generateContactSheet(photoUrls) {
             if(200 == s3res.statusCode) {
               logger.info("Uploaded file successfully!");
               logger.info("url: http://me-moji.s3.amazonaws.com/set_" +
-                sessionId + ".png");
+                sessionId + "_" + timestamp + ".png");
             }
           });
       });

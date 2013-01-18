@@ -305,6 +305,7 @@ function updateEmojiPhotosForId(newId) {
 // photo ids are the filenames on S3 - timestamp+emojiId
 function showFocus(photoUrl, type) {
     showBackground();
+    
     updateURLForFocus(photoUrl.split("/")[3], type);
     
     $("#focus").removeClass("photo");
@@ -312,8 +313,7 @@ function showFocus(photoUrl, type) {
     
     $("#focus").addClass(type);
     
-    // insert the right picture into the dialog box
-    $("#focus img.main").attr("src", photoUrl);
+    
     
     // add in the like buttons for facebook and twitter to #focus-footer
     $("#focus-footer").empty();
@@ -325,8 +325,6 @@ function showFocus(photoUrl, type) {
     } else {
       urlToShare = document.URL;
     }
-    
-    
     
     // DISABLING FB/TW for now because they're a hassle and not really
     // blocking. Will come back to this for v1.1
@@ -348,6 +346,23 @@ function showFocus(photoUrl, type) {
     
     // pull up a dialog box 
     $("#focus").show(500);
+    
+    if(type=='set') {
+      // delay a bit until we're sure the photo is available.
+      
+      $("#focus img.main").error(function() {
+        console.log("image failed to load");
+        setTimeout(function() {
+          
+          $("#focus img.main").attr("src", photoUrl);
+        }, 500);
+        $("#focus img.main").attr("src", photoUrl);
+
+      });
+      
+    }
+    // insert the right picture into the dialog box
+    $("#focus img.main").attr("src", photoUrl);
     
     focusShown = true;
     
@@ -538,16 +553,22 @@ function upload(image) {
       dataType: "json",
       data: {"image":canvas.toDataURL("image/png"), "emojiId":emojiId},
       success: function(data, textStatus) {
+        
+          var numPhotosBeforeAddition = getNumPhotosInSession();
+        
+          var lastPhotoTimestamp = data["photoURL"].split("_")[2];
+        
           addPhotoToSessionGutter(data["photoURL"], emojiId-1);
           
           // if this was the last photo, switch to a set focus mode.
-          if(_.filter(sessionPhotos, function(item) {return !_.isNull(item)}).length==19) {
-            console.log("GOT FINAL PICTURE, SWITCH TO SET VIEW");
+          if(getNumPhotosInSession()==19) {
+            console.log("REPLACEMENT ON EXISTING SET");
             hidePhotobooth();
 
             // http://me-moji.s3.amazonaws.com/set_S1AN3xi4wruUvB27dPwQZw.png
-            showFocus("http://me-moji.s3.amazonaws.com/set_" + sessionId + ".png", 'set');
+            showFocus("http://me-moji.s3.amazonaws.com/set_" + sessionId + "_" +lastPhotoTimestamp+".png", 'set');
           }
+
       },
       error: function(data, textStatus) {
     		console.log("FAIL: " + data + "; " + textStatus);
@@ -629,6 +650,10 @@ function setMode(mode) {
 			$("#review").show();
 			break;
 	}
+}
+
+function getNumPhotosInSession() {
+  return _.filter(sessionPhotos, function(item) {return !_.isNull(item)}).length;
 }
 
 // PER http://stackoverflow.com/questions/3003724/cant-click-allow-button-in-flash-on-firefox
