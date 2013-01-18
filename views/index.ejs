@@ -9,6 +9,8 @@
 	
 	<script type="text/javascript" src="/static/js/lib/bootstrap/js/bootstrap.min.js"></script>
 	
+	<script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
+	
 
 	<script type="text/javascript" src="/static/js/memoji.js"></script>
 	
@@ -19,6 +21,7 @@
 		var initialFocus = '<%=initialFocus%>';
 		var focusType = '<%=focusType%>';
 		var sessionPhotos = <%-photos%>;
+		var sessionId = '<%=sessionId%>';
 		
 		/* Deal with IE not having console.log */
 	    if (typeof console === "undefined" || typeof console.log === "undefined") {

@@ -351,9 +351,9 @@ function showFocus(photoUrl, type) {
     
     focusShown = true;
     
-    setTimeout(function() {
-        FB.XFBML.parse(document.getElementById('focus-footer'));
-        }, 100);
+    // setTimeout(function() {
+    //     FB.XFBML.parse(document.getElementById('focus-footer'));
+    //     }, 100);
 }
 
 function hideFocus() {
@@ -538,8 +538,16 @@ function upload(image) {
       dataType: "json",
       data: {"image":canvas.toDataURL("image/png"), "emojiId":emojiId},
       success: function(data, textStatus) {
-          
           addPhotoToSessionGutter(data["photoURL"], emojiId-1);
+          
+          // if this was the last photo, switch to a set focus mode.
+          if(_.filter(sessionPhotos, function(item) {return !_.isNull(item)}).length==19) {
+            console.log("GOT FINAL PICTURE, SWITCH TO SET VIEW");
+            hidePhotobooth();
+
+            // http://me-moji.s3.amazonaws.com/set_S1AN3xi4wruUvB27dPwQZw.png
+            showFocus("http://me-moji.s3.amazonaws.com/set_" + sessionId + ".png", 'set');
+          }
       },
       error: function(data, textStatus) {
     		console.log("FAIL: " + data + "; " + textStatus);

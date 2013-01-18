@@ -78,7 +78,9 @@ app.get('/', function(req, res) {
     sessionInit(req);
     
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
-        "camera":false, "initialFocus":"none",  "focusType":"none", "photos":JSON.stringify(req.session.photos)}});
+        "camera":false, "initialFocus":"none",  "focusType":"none",
+        "sessionId":sanitizeSessionId(req.session.id),
+        "photos":JSON.stringify(req.session.photos)}});
 });
 
 app.get('/browse/:name', function(req, res) {
@@ -86,7 +88,9 @@ app.get('/browse/:name', function(req, res) {
 
     var emojiName = req.params.name;
     res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
-        "camera":false, "initialFocus":"none", "focusType":"none", "photos":JSON.stringify(req.session.photos)}});
+        "camera":false, "initialFocus":"none", "focusType":"none", 
+        "sessionId":sanitizeSessionId(req.session.id),
+        "photos":JSON.stringify(req.session.photos)}});
 });
 
 app.get('/photo/:filename', function(req, res) {
@@ -100,6 +104,7 @@ app.get('/photo/:filename', function(req, res) {
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
         "camera":false, "initialFocus":filename, "focusType":"photo",
         "photos":JSON.stringify(req.session.photos),
+        "sessionId":sanitizeSessionId(req.session.id),
         "fbMetaImageURL":"http://me-moji.s3.amazonaws.com/"+filename+".png"}
     });
 });
@@ -114,6 +119,7 @@ app.get('/set/:session', function(req, res) {
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
         "camera":false, "initialFocus":filename, "focusType":"set",
         "photos":JSON.stringify(req.session.photos),
+        "sessionId":sanitizeSessionId(req.session.id),
         "fbMetaImageURL":"http://me-moji.s3.amazonaws.com/"+filename + ".png"}
     });
 });
@@ -126,7 +132,9 @@ app.get('/camera/:name', function(req, res) {
     var emojiName = req.params.name;
     
     res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
-        "camera":true, "initialFocus":"none",  "focusType":"none", "photos":JSON.stringify(req.session.photos)}});
+        "camera":true, "initialFocus":"none",  "focusType":"none",
+        "sessionId":sanitizeSessionId(req.session.id),
+        "photos":JSON.stringify(req.session.photos)}});
 });
 
 
@@ -240,7 +248,7 @@ app.post('/camera/', function(req, res) {
                                   return !_.isNull(item);
                                 });
                               
-                              if(listWithEntries.length >= 5) {
+                              if(listWithEntries.length >= 19) {
                                 generateContactSheet(listWithEntries);
                               }
 
