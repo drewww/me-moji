@@ -47,8 +47,8 @@ $(document).ready(function() {
         pickRandomName = false;
         emojiId = parseInt(initialFocus.slice(14, 16));
       } else if(focusType=="set") {
-        console.log("FOCUSING ON A SET: " + initialFocus);
-        
+        initialFocus += ".png";
+        pickRandomName = true;
       }
     } 
     
@@ -231,8 +231,8 @@ function updateURLForEmojiId(emojiId, camera) {
     }
 }
 
-function updateURLForFocus(filename) {
-  var url = "/photo/" + filename.split(".")[0];
+function updateURLForFocus(filename, type) {
+  var url = "/"+type+"/" + filename.split(".")[0];
   if(jQuery.browser.msie) {
     console.log("skipping msie pushstate");
     curUrl = document.URL + url;
@@ -305,13 +305,12 @@ function updateEmojiPhotosForId(newId) {
 // photo ids are the filenames on S3 - timestamp+emojiId
 function showFocus(photoUrl, type) {
     showBackground();
-    updateURLForFocus(photoUrl.split("/")[3]);
+    updateURLForFocus(photoUrl.split("/")[3], type);
     
     $("#focus").removeClass("photo");
     $("#focus").removeClass("set");
     
     $("#focus").addClass(type);
-
     
     // insert the right picture into the dialog box
     $("#focus img.main").attr("src", photoUrl);

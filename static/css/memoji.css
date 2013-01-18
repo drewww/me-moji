@@ -204,20 +204,29 @@ body {
     
     top: 50%;
     left: 50%;
+    
+    background-color: white;
+    
+    border: 1px solid #aaa;
+    box-shadow: 3px 3px 3px black;
+    padding: 10px;
+    
 }
 
 #focus.photo {
     margin-left: -185px;
     margin-top: -185px;
     
-    box-shadow: 3px 3px 3px black;
     width: 370px;
     height: 370px;
-    padding: 10px;
-    
-    background-color: white;
-    
-    border: 1px solid #aaa;
+}
+
+#focus.set {
+  margin-left: -320px;
+  margin-top: -320px;
+  
+  width: 640px;
+  height: 525px;
 }
 
 #focus.photo .main {
@@ -232,7 +241,7 @@ body {
 
 #focus.set .main {
     display: block;
-    width: 500px;
+    width: 600px;
     
     margin-top: 20px;
     margin-left: 20px;

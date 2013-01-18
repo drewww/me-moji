@@ -114,7 +114,7 @@ app.get('/set/:session', function(req, res) {
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
         "camera":false, "initialFocus":filename, "focusType":"set",
         "photos":JSON.stringify(req.session.photos),
-        "fbMetaImageURL":"http://me-moji.s3.amazonaws.com/"+filename}
+        "fbMetaImageURL":"http://me-moji.s3.amazonaws.com/"+filename + ".png"}
     });
 });
 
