@@ -250,6 +250,11 @@ body {
     margin-bottom: 10px;
 }
 
+.spinner {
+  margin-left: 310px;
+  margin-top: 230px;
+}
+
 
 img.share {
     height: 44px;

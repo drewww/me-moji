@@ -67,6 +67,7 @@ $(document).ready(function() {
     $("#focus").hide();
     $("#about").hide();
     
+    $(".spinner").hide();
     
     // on load, check the sessionPhotos list to see if this session has
     // photos we should load in.
@@ -350,15 +351,23 @@ function showFocus(photoUrl, type) {
     if(type=='set') {
       // delay a bit until we're sure the photo is available.
       
+      // hide this until we're sure it's loaded successfully
+      $("#focus img.main").hide()
+      
+      $("#focus img.spinner").show();
       $("#focus img.main").error(function() {
-        console.log("image failed to load");
+        console.log("image load error");
         setTimeout(function() {
-          
           $("#focus img.main").attr("src", photoUrl);
-        }, 1500);
-        $("#focus img.main").attr("src", photoUrl);
-
+        }, 500);
       });
+      
+      $("#focus img.main").load(function() {
+        console.log("image loaded");
+        $("#focus img.spinner").hide();
+        $("#focus img.main").show();
+      });
+      
       
     }
     // insert the right picture into the dialog box
