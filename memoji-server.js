@@ -191,18 +191,16 @@ app.post('/camera/', function(req, res) {
                   
                   var baseFilename = filename;
                   filename = "m_" + baseFilename;
-                  var alias = exec('composite -compose CopyOpacity static/img/mask.png /tmp/'
-                    + baseFilename + " /tmp/" + filename, function(error, stdout, stderr) {
-                      
-                      var s3req = s3.put(filename, {
-                          'Content-Length':buf.length,
+                  var alias = exec('composite -compose CopyOpacity static/img/mask.png /tmp/' + baseFilename + ' -', {encoding:'binary', maxBuffer: 1000*1024},
+                  function(error, stdout, stderr) {
+                      console.log("composite stdout result length: " + stdout.length);
+                      var progress = s3.putBuffer(new Buffer(stdout,'binary'),
+                       filename, {
+                          'Content-Length':stdout.length,
                           'Content-Type':'image/png',
                           'x-amz-acl': 'public-read'
-                      });
-                      
-                      s3req.on('response', function(s3res) {
+                      }, function(err, s3res) {
                           if(200 == s3res.statusCode) {
-                            
                               // do a bunch of redis work here.
                               // 1. increment the id counter
                               // 2. make an image:id entry
@@ -230,7 +228,6 @@ app.post('/camera/', function(req, res) {
                                                       });
                                               });
                                       });
-
                               });
 
                               // put this photo in the session so it's tracked per person.
@@ -255,13 +252,10 @@ app.post('/camera/', function(req, res) {
                               if(listWithEntries.length >= 19) {
                                 generateContactSheet(listWithEntries, timestamp, req);
                               }
-
                               res.write('{"photoURL":"'+fullPath+'"}');
                               res.end();
-
-                          }
+                          } // closes if statusCode==200
                       });
-                      s3req.end(buf);
                   });
               } else {
                   logger.error("Image rejected: " + stdout);
@@ -366,7 +360,7 @@ function sessionInit(req) {
     if(typeof req.session.photos == "undefined") {
         req.session.photos = [];
     } else if(typeof req.session.setUrl == "undefined") {
-      console.log("setting setUrl to ''");
+      logger.info("setting setUrl to ''");
       req.session.setUrl = "";
     }
     
