@@ -263,7 +263,6 @@ function updateEmojiPhotosForId(newId) {
                 
                 // figure out our container first. get the last child of
                 // #all-photos and see how many children IT has.
-                console.log("url: " + url);
                 
                 var container = $("#all-photos li:last-child");
                 
