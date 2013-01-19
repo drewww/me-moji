@@ -356,19 +356,15 @@ function showFocus(photoUrl, type) {
       
       $("#focus img.spinner").show();
       $("#focus img.main").error(function() {
-        console.log("image load error");
         setTimeout(function() {
           $("#focus img.main").attr("src", photoUrl);
         }, 500);
       });
       
       $("#focus img.main").load(function() {
-        console.log("image loaded");
         $("#focus img.spinner").hide();
         $("#focus img.main").show();
       });
-      
-      
     }
     // insert the right picture into the dialog box
     $("#focus img.main").attr("src", photoUrl);

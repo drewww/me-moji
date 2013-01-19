@@ -80,6 +80,7 @@ app.get('/', function(req, res) {
     res.render('index.ejs', {layout:false, locals:{"emojiName":"none",
         "camera":false, "initialFocus":"none",  "focusType":"none",
         "sessionId":sanitizeSessionId(req.session.id),
+        "setUrl":req.session.setUrl,
         "photos":JSON.stringify(req.session.photos)}});
 });
 
@@ -90,6 +91,7 @@ app.get('/browse/:name', function(req, res) {
     res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
         "camera":false, "initialFocus":"none", "focusType":"none", 
         "sessionId":sanitizeSessionId(req.session.id),
+        "setUrl":req.session.setUrl,
         "photos":JSON.stringify(req.session.photos)}});
 });
 
@@ -105,6 +107,7 @@ app.get('/photo/:filename', function(req, res) {
         "camera":false, "initialFocus":filename, "focusType":"photo",
         "photos":JSON.stringify(req.session.photos),
         "sessionId":sanitizeSessionId(req.session.id),
+        "setUrl":req.session.setUrl,
         "fbMetaImageURL":"http://me-moji.s3.amazonaws.com/"+filename+".png"}
     });
 });
@@ -120,6 +123,7 @@ app.get('/set/:session', function(req, res) {
         "camera":false, "initialFocus":filename, "focusType":"set",
         "photos":JSON.stringify(req.session.photos),
         "sessionId":sanitizeSessionId(req.session.id),
+        "setUrl":req.session.setUrl,
         "fbMetaImageURL":"http://me-moji.s3.amazonaws.com/"+filename + ".png"}
     });
 });
@@ -134,6 +138,7 @@ app.get('/camera/:name', function(req, res) {
     res.render('index.ejs', {layout:false, locals:{"emojiName":emojiName,
         "camera":true, "initialFocus":"none",  "focusType":"none",
         "sessionId":sanitizeSessionId(req.session.id),
+        "setUrl":req.session.setUrl,
         "photos":JSON.stringify(req.session.photos)}});
 });
 
@@ -229,7 +234,6 @@ app.post('/camera/', function(req, res) {
                               });
 
                               // put this photo in the session so it's tracked per person.
-
                               if(!(req.session.photos)) {
                                   req.session.photos = [];
                               }
@@ -249,7 +253,7 @@ app.post('/camera/', function(req, res) {
                                 });
                               
                               if(listWithEntries.length >= 19) {
-                                generateContactSheet(listWithEntries, timestamp);
+                                generateContactSheet(listWithEntries, timestamp, req);
                               }
 
                               res.write('{"photoURL":"'+fullPath+'"}');
@@ -271,7 +275,7 @@ app.post('/camera/', function(req, res) {
     
 });
 
-function generateContactSheet(photoUrls, timestamp) {
+function generateContactSheet(photoUrls, timestamp, req) {
   logger.info("GENERATING CONTACT SHEET: " + JSON.stringify(photoUrls) + " for timestamp " + timestamp);
   
   // 1. Download all the photos locally. They may have been taken on any
@@ -317,9 +321,13 @@ function generateContactSheet(photoUrls, timestamp) {
           }, function(err, s3res) {
             logger.info("response: " + s3res.statusCode);
             if(200 == s3res.statusCode) {
-              logger.info("Uploaded file successfully!");
-              logger.info("url: http://me-moji.s3.amazonaws.com/set_" +
-                sessionId + "_" + timestamp + ".png");
+              var url = "http://me-moji.s3.amazonaws.com/set_" +
+                sessionId + "_" + timestamp + ".png";
+              
+              logger.info("Uploaded set: " + url);
+              
+              req.session["setUrl"] = url;
+              req.session.save();
             }
           });
       });
@@ -357,7 +365,11 @@ function generateContactSheet(photoUrls, timestamp) {
 function sessionInit(req) {
     if(typeof req.session.photos == "undefined") {
         req.session.photos = [];
+    } else if(typeof req.session.setUrl == "undefined") {
+      console.log("setting setUrl to ''");
+      req.session.setUrl = "";
     }
+    
 }
 
 function sanitizeSessionId(sessionId) { 
