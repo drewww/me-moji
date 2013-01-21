@@ -65,7 +65,7 @@ app.listen(port);
 
 app.use(express.cookieParser());
 app.use(express.session({secret:conf["session-secret"],
-    store:redisSessionStore}));
+    store:redisSessionStore, maxAge: 60*24*365}));
 
 app.use(express.bodyParser());
 app.use(express.errorHandler({ dumpExceptions: true }));

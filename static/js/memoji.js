@@ -123,7 +123,7 @@ $(document).ready(function() {
         
         emojiId = (emojiId+1);
         
-        if(emojiId==20) emojiId=1;
+        if(emojiId==21) emojiId=1;
         
         updateEmojiTabSelect();
         updateEmojiPhotosForId(emojiId);
@@ -585,7 +585,7 @@ function upload(image) {
 }
 
 function addPhotoToSessionGutter(url, emojiIdForUrl) {
-    
+    console.log("emojiIdForUrl: " + emojiIdForUrl);
     // keep that list up to date.
     sessionPhotos[emojiIdForUrl] = url;
     
