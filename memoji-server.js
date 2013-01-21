@@ -282,11 +282,9 @@ function generateContactSheet(photoUrls, timestamp, req) {
   
   var checkFinished = function() {
     numChecked++;
-    logger.info("checkfinished: " + numChecked + " (target: " + photoUrls.length + ")");
     if(numChecked==photoUrls.length) {
       
       // do the actual IM compositing here.
-      logger.info("DO COMPOSITING NOW");
       
       // compositing is just another IM command. 
       // in all its usual torturous glory:
@@ -313,7 +311,6 @@ function generateContactSheet(photoUrls, timestamp, req) {
             'Content-Type':'image/png',
             'x-amz-acl': 'public-read'
           }, function(err, s3res) {
-            logger.info("response: " + s3res.statusCode);
             if(200 == s3res.statusCode) {
               var url = "http://me-moji.s3.amazonaws.com/set_" +
                 sessionId + "_" + timestamp + ".png";
