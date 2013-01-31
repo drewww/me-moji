@@ -65,7 +65,7 @@ app.listen(port);
 
 app.use(express.cookieParser());
 app.use(express.session({secret:conf["session-secret"],
-    store:redisSessionStore, maxAge: 60*24*365}));
+    store:redisSessionStore, cookie:{maxAge: 1000*60*60*24*365}}));
 
 app.use(express.bodyParser());
 app.use(express.errorHandler({ dumpExceptions: true }));
@@ -354,6 +354,9 @@ function generateContactSheet(photoUrls, timestamp, req) {
 }
 
 function sessionInit(req) {
+    req.session.cookie.expires = false;
+    req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
+  
     if(typeof req.session.photos == "undefined") {
         req.session.photos = [];
     } else if(typeof req.session.setUrl == "undefined") {
