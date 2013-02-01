@@ -249,7 +249,7 @@ app.post('/camera/', function(req, res) {
                                   return !_.isNull(item);
                                 });
                               
-                              if(listWithEntries.length >= 19) {
+                              if(listWithEntries.length >= 19 ) {
                                 generateContactSheet(listWithEntries, timestamp, req);
                               }
                               res.write('{"photoURL":"'+fullPath+'"}');
@@ -278,11 +278,14 @@ function generateContactSheet(photoUrls, timestamp, req) {
   //    on our path already.
   
   
-  var numChecked = 0;
+  var numDownloaded = 0;
+  var numComposited = 0;
   
-  var checkFinished = function() {
-    numChecked++;
-    if(numChecked==photoUrls.length) {
+  var compositedPaths = [];
+  
+  var checkFinishedDownload = function() {
+    numDownloaded++;
+    if(numDownloaded==photoUrls.length) {
       
       // do the actual IM compositing here.
       
@@ -301,29 +304,59 @@ function generateContactSheet(photoUrls, timestamp, req) {
         return "/tmp/" + filename;
       });
       
-      photoPaths.push("static/img/logomedium.png");
+      // for each of these photos, add the emoji icon in the bottom-right
+      // corner. 
       
-      var child = exec('montage ' + photoPaths.join(" ") + " -mode concatenate -tile 5x4 -geometry 240x240+10+10 -", {encoding: 'binary', maxBuffer:5000*1024},
-        function(err, stdout, stderr) {
-          
-          var progress = s3.putBuffer(new Buffer(stdout, 'binary'), "set_" + sessionId + "_"+timestamp+".png", {
-            'Content-Length':stdout.length,
-            'Content-Type':'image/png',
-            'x-amz-acl': 'public-read'
-          }, function(err, s3res) {
-            if(200 == s3res.statusCode) {
-              var url = "http://me-moji.s3.amazonaws.com/set_" +
-                sessionId + "_" + timestamp + ".png";
-              
-              logger.info("Uploaded set: " + url);
-              
-              req.session["setUrl"] = url;
-              req.session.save();
-            }
-          });
+      _.each(photoPaths, function(path) {
+        logger.info("path: " + path);
+        
+        var pieces = path.split("/");
+        
+        var emojiId = parseInt(path.split("_")[3].split(".")[0]);
+        
+        var emojiPath = "static/img/emoji/" + emojiId + ".png";
+        
+        var outputPath = "/tmp/o_" + pieces[pieces.length-1];
+        
+        compositedPaths.push(outputPath);
+        
+        var child = exec('convert ' + path + " " + emojiPath + " -geometry x100+163+163 -composite " + outputPath, function(err, stdout, stderr) {
+          checkFinishedComposite();
+        });
       });
-      
     }
+  }
+  
+  var checkFinishedComposite = function() {
+    numComposited++;
+    
+    // drop out if they haven't all been composited yet
+    if(numComposited!=photoUrls.length) return;
+    
+    var pieces = compositedPaths[0].split("/");
+    var sessionId = sanitizeSessionId(pieces[pieces.length-1].split("_")[1]);
+    
+    compositedPaths.push("static/img/logomedium.png");
+    
+    var child = exec('montage ' + compositedPaths.join(" ") + " -mode concatenate -tile 5x4 -geometry 240x240+10+10 -", {encoding: 'binary', maxBuffer:5000*1024},
+      function(err, stdout, stderr) {
+        
+        var progress = s3.putBuffer(new Buffer(stdout, 'binary'), "set_" + sessionId + "_"+timestamp+".png", {
+          'Content-Length':stdout.length,
+          'Content-Type':'image/png',
+          'x-amz-acl': 'public-read'
+        }, function(err, s3res) {
+          if(200 == s3res.statusCode) {
+            var url = "http://me-moji.s3.amazonaws.com/set_" +
+              sessionId + "_" + timestamp + ".png";
+            
+            logger.info("Uploaded set: " + url);
+            
+            req.session["setUrl"] = url;
+            req.session.save();
+          }
+        });
+    });
   }
   
   _.each(photoUrls, function(photoUrl) {
@@ -335,7 +368,7 @@ function generateContactSheet(photoUrls, timestamp, req) {
     fs.stat("/tmp/" + filename, function(err, stats) {
       if(!_.isNull(stats) && !_.isUndefined(stats)) {
         logger.info("Found existing file: " + filename);
-        checkFinished();
+        checkFinishedDownload();
       } else {
         // download the file.
         logger.info("Missing: " + filename);
@@ -345,7 +378,7 @@ function generateContactSheet(photoUrls, timestamp, req) {
           
         r.on("close", function() {
           logger.info("Downloaded: " + filename);
-          checkFinished();
+          checkFinishedDownload();
         });
       }
     });
