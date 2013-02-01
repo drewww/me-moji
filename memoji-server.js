@@ -334,8 +334,11 @@ function generateContactSheet(photoUrls, timestamp, req) {
     if(numComposited!=photoUrls.length) return;
     
     var pieces = compositedPaths[0].split("/");
-    var sessionId = sanitizeSessionId(pieces[pieces.length-1].split("_")[1]);
     
+    logger.info(pieces);
+    
+    var sessionId = sanitizeSessionId(pieces[pieces.length-1].split("_")[2]);
+    logger.info("sessionId: " + sessionId);
     compositedPaths.push("static/img/logomedium.png");
     
     var child = exec('montage ' + compositedPaths.join(" ") + " -mode concatenate -tile 5x4 -geometry 240x240+10+10 -", {encoding: 'binary', maxBuffer:5000*1024},
