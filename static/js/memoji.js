@@ -123,7 +123,7 @@ $(document).ready(function() {
         
         emojiId = (emojiId+1);
         
-        if(emojiId==21) emojiId=1;
+        if(emojiId==20) emojiId=1;
         
         updateEmojiTabSelect();
         updateEmojiPhotosForId(emojiId);
@@ -565,8 +565,9 @@ function upload(image) {
           var numPhotosBeforeAddition = getNumPhotosInSession();
         
           var lastPhotoTimestamp = data["photoURL"].split("_")[2];
+          var emojiForUploadedPhoto = parseInt(data["photoURL"].split("_")[3]);
         
-          addPhotoToSessionGutter(data["photoURL"], emojiId-1);
+          addPhotoToSessionGutter(data["photoURL"], emojiForUploadedPhoto);
           
           // if this was the last photo, switch to a set focus mode.
           if(getNumPhotosInSession()==19) {
