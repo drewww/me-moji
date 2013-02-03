@@ -1,16 +1,23 @@
 {
-	"name":"me-moji",
+	"name": "me-moji",
 	"version": "0.1.0",
-	"dependencies":{
-		"commander":"*",
-		"winston":"*",
-		"express":"*",
-		"underscore":"*",
-		"ejs":"*",
-		"knox":"*",
-		"redis":"*",
-		"connect-redis":"*",
-		"connect":"*",
-		"request":"*"
+	"dependencies": {
+		"commander": "*",
+		"winston": "*",
+		"express": "*",
+		"underscore": "*",
+		"ejs": "*",
+		"knox": "*",
+		"redis": "*",
+		"connect-redis": "*",
+		"connect": "*",
+		"request": "*"
+	},
+	"subdomain": "me-moji",
+	"scripts": {
+		"start": "node memoji-server.js"
+	},
+	"engines": {
+		"node": "0.8.x"
 	}
 }
