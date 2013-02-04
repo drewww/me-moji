@@ -3,6 +3,7 @@ var express = require('express'),
     fs = require('fs'),
     _ = require('underscore')._,
     winston = require('winston'),
+    redis_iris_lib = require('iris-redis'),
     redis_lib = require('redis'),
     knox = require('knox'),
     RedisStore = require('connect-redis')(express),
@@ -28,7 +29,9 @@ var logger= new (winston.Logger)({
 // throughout the system. 
 var conf = {"redis":{
   "host":process.env.REDIS_SERVER,
-  "port":process.env.REDIS_PORT
+  "port":process.env.REDIS_PORT,
+  "auth":process.env.REDIS_AUTH,
+  "iris":process.env.REDIS_IRIS!="false"
   },
   
   "aws":{
@@ -43,9 +46,20 @@ logger.info("CONFIG: " + JSON.stringify(conf));
 
 var s3 = knox.createClient(conf["aws"]);
 
+// if we're supposed to use iris, swap in that library
+if(conf.redis.iris) {
+  redis_lib = redis_iris_lib;
+}
 
 var redis = redis_lib.createClient(conf["redis"]["port"],
     conf["redis"]["server"]);
+    
+// annoyingly, false comes out as a string in env variable. so check against
+// the "false" string.
+if(conf["redis"]["iris"]) {
+  logger.info("authorizing on redis client")
+  redis.auth(conf["redis"]["auth"]);
+}
 
 // we could reuse the existing connection, but that would put session vars
 // in the same namespace as everything else. Seems cleaner to put them

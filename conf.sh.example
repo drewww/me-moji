@@ -9,6 +9,8 @@ export AWS_BUCKET=me-moji
 
 export REDIS_SERVER=server
 export REDIS_PORT=port
+export REDIS_AUTH=false
+export REDIS_IRIS=false
 
 export MEMOJI_SESSION_SECRET="secret string"
 
