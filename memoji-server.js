@@ -8,6 +8,7 @@ var express = require('express'),
     RedisStore = require('connect-redis')(express),
     http = require('http'),
     request = require('request'),
+
     exec = require('child_process').exec;
 
 
@@ -23,8 +24,22 @@ var logger= new (winston.Logger)({
     levels: winston.config.syslog.levels
 });
 
-// load AWS credentials
-var conf = JSON.parse(fs.readFileSync("conf.json"));
+// load relevant environment varibles into a config object for easy use
+// throughout the system. 
+var conf = {"redis":{
+  "host":process.env.REDIS_SERVER,
+  "port":process.env.REDIS_PORT
+  },
+  
+  "aws":{
+    "key":process.env.AWS_KEY,
+    "secret":process.env.AWS_SECRET,
+    "bucket":process.env.AWS_BUCKET
+  },
+  "session-secret":process.env.MEMOJI_SESSION_SECRET
+  };
+  
+logger.info("CONFIG: " + JSON.stringify(conf));
 
 var s3 = knox.createClient(conf["aws"]);
 

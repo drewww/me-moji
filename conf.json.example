@@ -1,9 +1,0 @@
-{"aws":{"key":"access key here",
- "secret":"secret key here",
- "bucket":"bucket name here"},
-
- "redis":{"server":"redis ip here",
- "port":6379},
-
- "session-secret":"secret string"
-}

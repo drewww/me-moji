@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# run this with "source" to set these environment variables easily
+
+export AWS_KEY=keys
+export AWS_SECRET=secret
+export AWS_BUCKET=me-moji
+
+
+export REDIS_SERVER=server
+export REDIS_PORT=port
+
+export MEMOJI_SESSION_SECRET="secret string"
+
+echo "Set env variables!"

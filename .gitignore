@@ -20,4 +20,4 @@ static/img/photos/*.png
 
 *.pem
 
-conf.json
+conf.sh
