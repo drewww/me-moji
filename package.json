@@ -1,6 +1,6 @@
 {
 	"name": "me-moji",
-	"version": "0.1.0-1",
+	"version": "0.1.0-2",
 	"dependencies": {
 		"commander": "*",
 		"winston": "*",
@@ -9,7 +9,7 @@
 		"ejs": "*",
 		"knox": "*",
 		"iris-redis": "*",
-		"redis":"*",
+		"redis": "*",
 		"connect-redis": "*",
 		"connect": "*",
 		"request": "*"

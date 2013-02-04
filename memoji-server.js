@@ -3,8 +3,8 @@ var express = require('express'),
     fs = require('fs'),
     _ = require('underscore')._,
     winston = require('winston'),
-    redis_iris_lib = require('iris-redis'),
-    redis_lib = require('redis'),
+    // redis_iris_lib = require('iris-redis'),
+    redis_lib = require('iris-redis'),
     knox = require('knox'),
     RedisStore = require('connect-redis')(express),
     http = require('http'),
@@ -29,7 +29,7 @@ var logger= new (winston.Logger)({
 // throughout the system. 
 var conf = {"redis":{
   "host":process.env.REDIS_SERVER,
-  "port":process.env.REDIS_PORT,
+  "port":parseInt(process.env.REDIS_PORT),
   "auth":process.env.REDIS_AUTH,
   "iris":process.env.REDIS_IRIS!="false"
   },
@@ -47,26 +47,22 @@ logger.info("CONFIG: " + JSON.stringify(conf));
 var s3 = knox.createClient(conf["aws"]);
 
 // if we're supposed to use iris, swap in that library
+// if(conf.redis.iris) {
+//   redis_lib = redis_iris_lib;
+// }
+
+
+var redis;
+
+logger.info("REDIS host: " + conf.redis.host + ":" + conf.redis.port + " (auth: " + conf.redis.auth +")");
+
 if(conf.redis.iris) {
-  redis_lib = redis_iris_lib;
+  redis = redis_lib.createClient(conf.redis.port, conf.redis.host, {auth:conf.redis.auth});
+} else {
+  redis = redis_lib.createClient(conf.redis.port, conf.redis.host, {auth:"null"});
 }
 
-var redis = redis_lib.createClient(conf["redis"]["port"],
-    conf["redis"]["server"]);
-    
-// annoyingly, false comes out as a string in env variable. so check against
-// the "false" string.
-if(conf["redis"]["iris"]) {
-  logger.info("authorizing on redis client")
-  redis.auth(conf["redis"]["auth"]);
-}
-
-// we could reuse the existing connection, but that would put session vars
-// in the same namespace as everything else. Seems cleaner to put them
-// in a different database index.
-var redisSessionStore = new RedisStore({"host":conf["redis"]["server"],
-    "port":conf["redis"]["port"], "db":1});
-
+var redisSessionStore = new RedisStore({client:redis});
 
 program.version(0.1)
     .option('-p, --port [num]', "Set the port.")
@@ -76,7 +72,7 @@ var host = "localhost";
 if(program.args.length==1) {
     host = program.args[0];
 } else if (program.args.length==0) {
-    logger.info("Defaulting to localhost.");
+    logger.info("Defaulting to localhost for webserver host.");
 } else {
     logger.info("Too many command line arguments.");
 }
@@ -94,8 +90,7 @@ app.listen(port);
 
 app.use(express.cookieParser());
 app.use(express.session({secret:conf["session-secret"],
-    store:redisSessionStore, cookie:{maxAge: 1000*60*60*24*365}}));
-
+      store:redisSessionStore, cookie:{maxAge: 1000*60*60*24*365}}));
 app.use(express.bodyParser());
 app.use(express.errorHandler({ dumpExceptions: true }));
 app.use("/static", express.static(__dirname + '/static'));
@@ -434,3 +429,18 @@ function sessionInit(req) {
 function sanitizeSessionId(sessionId) { 
   return sessionId.replace("/", "").replace("+", "").replace("_", ""); 
 }
+
+var error = function(err) {
+    if(err) {
+      logger.warning(err.stack);
+      process.exit(1);
+    } else {
+      process.exit(0);
+    }
+}
+
+process.on('SIGTERM', error);
+process.on('SIGINT', error);
+process.on('uncaughtException', error);
+
+
