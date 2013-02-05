@@ -86,15 +86,16 @@ if(program.port) {
 
 var app = express();
 
-app.listen(port);
 
-app.use(express.cookieParser());
-app.use(express.session({secret:conf["session-secret"],
-      store:redisSessionStore, cookie:{maxAge: 1000*60*60*24*365}}));
-app.use(express.bodyParser());
-app.use(express.errorHandler({ dumpExceptions: true }));
-app.use("/static", express.static(__dirname + '/static'));
-app.use(express.favicon(__dirname + '/static/img/favicon.ico', { maxAge: 2592000000 }));
+app.configure(function() {
+  app.use(express.cookieParser());
+  app.use(express.session({secret:conf["session-secret"],
+        store:redisSessionStore, cookie:{maxAge: 1000*60*60*24*365}}));
+  app.use(express.bodyParser());
+  app.use(express.errorHandler({ dumpExceptions: true }));
+  app.use("/static", express.static(__dirname + '/static'));
+  app.use(express.favicon(__dirname + '/static/img/favicon.ico', { maxAge: 2592000000 }));
+});
 
 
 // Setup the index page.
@@ -442,5 +443,7 @@ var error = function(err) {
 process.on('SIGTERM', error);
 process.on('SIGINT', error);
 process.on('uncaughtException', error);
+
+app.listen(port);
 
 
