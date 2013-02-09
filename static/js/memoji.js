@@ -354,6 +354,8 @@ function showFocus(photoUrl, type) {
       $("#focus img.main").hide()
       
       $("#focus img.spinner").show();
+      $("#focus div.notice").show();
+
       $("#focus img.main").error(function() {
         setTimeout(function() {
           $("#focus img.main").attr("src", photoUrl);
@@ -362,6 +364,7 @@ function showFocus(photoUrl, type) {
       
       $("#focus img.main").load(function() {
         $("#focus img.spinner").hide();
+        $("#focus div.notice").hide();
         $("#focus img.main").show();
       });
     }
