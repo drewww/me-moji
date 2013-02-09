@@ -42,15 +42,9 @@ var conf = {"redis":{
   "session-secret":process.env.MEMOJI_SESSION_SECRET
   };
   
-logger.info("CONFIG: " + JSON.stringify(conf));
+logger.debug("CONFIG: " + JSON.stringify(conf));
 
 var s3 = knox.createClient(conf["aws"]);
-
-// if we're supposed to use iris, swap in that library
-// if(conf.redis.iris) {
-//   redis_lib = redis_iris_lib;
-// }
-
 
 var redis;
 
@@ -83,8 +77,15 @@ if(program.port) {
     port = program.port;
 }
 
+var started = false;
+
 
 redis.on("ready", function() {
+  if(!started) setupServer();
+})
+
+function setupServer() {
+  
   var app = express();
 
   app.configure(function() {
@@ -193,7 +194,7 @@ redis.on("ready", function() {
       var emojiId = req.param("emojiId");
       var timestamp = Date.now();
 
-      logger.info("Received camera post!");
+      logger.debug("Received camera post!");
 
       // session ids apparently can have '/' characters in them? annoying.
       // not sure what other evils they might hold.
@@ -298,157 +299,153 @@ redis.on("ready", function() {
 
   });
 
-  function generateContactSheet(photoUrls, timestamp, req) {
-    logger.info("GENERATING CONTACT SHEET: " + JSON.stringify(photoUrls) + " for timestamp " + timestamp);
-
-    // 1. Download all the photos locally. They may have been taken on any
-    //    server instance at any time so we need to make sure we have copies.
-    //    We can optimize a little by checking to see if the file names are
-    //    on our path already.
-
-
-    var numDownloaded = 0;
-    var numComposited = 0;
-
-    var compositedPaths = [];
-
-    var checkFinishedDownload = function() {
-      numDownloaded++;
-      if(numDownloaded==photoUrls.length) {
-
-        // do the actual IM compositing here.
-
-        // compositing is just another IM command. 
-        // in all its usual torturous glory:
-        // montage [images] -mode concatenate -tile 5x4 -geometry 240x240+10+10 out.png
-
-        // this is a little cross to side-effect out of the map, but...
-        var sessionId;
-
-        var photoPaths = _.map(photoUrls, function(photoUrl) {
-          var pieces = photoUrl.split("/");
-          var filename = pieces[pieces.length-1];
-          sessionId = sanitizeSessionId(filename.split("_")[1]);
-
-          return "/tmp/" + filename;
-        });
-
-        // for each of these photos, add the emoji icon in the bottom-right
-        // corner. 
-
-        _.each(photoPaths, function(path) {
-          logger.info("path: " + path);
-
-          var pieces = path.split("/");
-
-          var emojiId = parseInt(path.split("_")[3].split(".")[0]);
-
-          var emojiPath = "static/img/emoji/" + emojiId + ".png";
-
-          var outputPath = "/tmp/o_" + pieces[pieces.length-1];
-
-          compositedPaths.push(outputPath);
-
-          var child = exec('convert ' + path + " " + emojiPath + " -geometry x100+163+163 -composite " + outputPath, function(err, stdout, stderr) {
-            checkFinishedComposite();
-          });
-        });
-      }
-    }
-
-    var checkFinishedComposite = function() {
-      numComposited++;
-
-      // drop out if they haven't all been composited yet
-      if(numComposited!=photoUrls.length) return;
-
-      var pieces = compositedPaths[0].split("/");
-
-      logger.info(pieces);
-
-      var sessionId = sanitizeSessionId(pieces[pieces.length-1].split("_")[2]);
-      logger.info("sessionId: " + sessionId);
-      compositedPaths.push("static/img/logomedium.png");
-
-      var child = exec('montage ' + compositedPaths.join(" ") + " -mode concatenate -tile 5x4 -geometry 240x240+10+10 -", {encoding: 'binary', maxBuffer:5000*1024},
-        function(err, stdout, stderr) {
-
-          var progress = s3.putBuffer(new Buffer(stdout, 'binary'), "set_" + sessionId + "_"+timestamp+".png", {
-            'Content-Length':stdout.length,
-            'Content-Type':'image/png',
-            'x-amz-acl': 'public-read'
-          }, function(err, s3res) {
-            if(200 == s3res.statusCode) {
-              var url = "http://me-moji.s3.amazonaws.com/set_" +
-                sessionId + "_" + timestamp + ".png";
-
-              logger.info("Uploaded set: " + url);
-
-              req.session["setUrl"] = url;
-              req.session.save();
-            }
-          });
-      });
-    }
-
-    _.each(photoUrls, function(photoUrl) {
-      logger.info("processing photoUrl: " + photoUrl);
-      var pieces = photoUrl.split("/");
-
-      var filename = pieces[pieces.length-1];
-
-      fs.stat("/tmp/" + filename, function(err, stats) {
-        if(!_.isNull(stats) && !_.isUndefined(stats)) {
-          logger.info("Found existing file: " + filename);
-          checkFinishedDownload();
-        } else {
-          // download the file.
-          logger.info("Missing: " + filename);
-
-          var r = request(photoUrl)
-            .pipe(fs.createWriteStream("/tmp/"+filename));
-
-          r.on("close", function() {
-            logger.info("Downloaded: " + filename);
-            checkFinishedDownload();
-          });
-        }
-      });
-    });
-
-  }
-
-  function sessionInit(req) {
-      logger.info("req.session: " + JSON.stringify(req.session));
-      req.session.cookie.expires = false;
-      req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
-
-      if(typeof req.session.photos == "undefined") {
-          req.session.photos = [];
-      } else if(typeof req.session.setUrl == "undefined") {
-        logger.info("setting setUrl to ''");
-        req.session.setUrl = "";
-      }
-
-  }
-
-  function sanitizeSessionId(sessionId) { 
-    return sessionId.replace("/", "").replace("+", "").replace("_", ""); 
-  }
-
-  var error = function(err) {
-      if(err) {
-        logger.warning(err.stack);
-        process.exit(1);
-      } else {
-        process.exit(0);
-      }
-  }
-
-  process.on('SIGTERM', error);
-  process.on('SIGINT', error);
-  process.on('uncaughtException', error);
-
   app.listen(port);
-  
-})
+  started = true;
+}
+
+
+function sessionInit(req) {
+    // logger.info("req.session: " + JSON.stringify(req.session));
+    
+    logger.info("session photos: " + _.filter(req.session.photos, function(photo) { return !_.isNull(photo)}).length);
+    
+    req.session.cookie.expires = false;
+    req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
+
+    if(typeof req.session.photos == "undefined") {
+        req.session.photos = [];
+    } else if(typeof req.session.setUrl == "undefined") {
+      logger.info("setting setUrl to ''");
+      req.session.setUrl = "";
+    }
+
+}
+
+function generateContactSheet(photoUrls, timestamp, req) {
+  logger.info("GENERATING CONTACT SHEET: " + JSON.stringify(photoUrls) + " for timestamp " + timestamp);
+
+  // 1. Download all the photos locally. They may have been taken on any
+  //    server instance at any time so we need to make sure we have copies.
+  //    We can optimize a little by checking to see if the file names are
+  //    on our path already.
+
+
+  var numDownloaded = 0;
+  var numComposited = 0;
+
+  var compositedPaths = [];
+
+  var checkFinishedDownload = function() {
+    numDownloaded++;
+    if(numDownloaded==photoUrls.length) {
+
+      // do the actual IM compositing here.
+
+      // compositing is just another IM command. 
+      // in all its usual torturous glory:
+      // montage [images] -mode concatenate -tile 5x4 -geometry 240x240+10+10 out.png
+
+      // this is a little cross to side-effect out of the map, but...
+      var sessionId;
+
+      var photoPaths = _.map(photoUrls, function(photoUrl) {
+        var pieces = photoUrl.split("/");
+        var filename = pieces[pieces.length-1];
+        sessionId = sanitizeSessionId(filename.split("_")[1]);
+
+        return "/tmp/" + filename;
+      });
+
+      // for each of these photos, add the emoji icon in the bottom-right
+      // corner. 
+
+      _.each(photoPaths, function(path) {
+        var pieces = path.split("/");
+
+        var emojiId = parseInt(path.split("_")[3].split(".")[0]);
+
+        var emojiPath = "static/img/emoji/" + emojiId + ".png";
+
+        var outputPath = "/tmp/o_" + pieces[pieces.length-1];
+
+        compositedPaths.push(outputPath);
+
+        var child = exec('convert ' + path + " " + emojiPath + " -geometry x100+163+163 -composite " + outputPath, function(err, stdout, stderr) {
+          checkFinishedComposite();
+        });
+      });
+    }
+  }
+
+  var checkFinishedComposite = function() {
+    numComposited++;
+
+    // drop out if they haven't all been composited yet
+    if(numComposited!=photoUrls.length) return;
+
+    var pieces = compositedPaths[0].split("/");
+
+    var sessionId = sanitizeSessionId(pieces[pieces.length-1].split("_")[2]);
+    compositedPaths.push("static/img/logomedium.png");
+
+    var child = exec('montage ' + compositedPaths.join(" ") + " -mode concatenate -tile 5x4 -geometry 240x240+10+10 -", {encoding: 'binary', maxBuffer:5000*1024},
+      function(err, stdout, stderr) {
+
+        var progress = s3.putBuffer(new Buffer(stdout, 'binary'), "set_" + sessionId + "_"+timestamp+".png", {
+          'Content-Length':stdout.length,
+          'Content-Type':'image/png',
+          'x-amz-acl': 'public-read'
+        }, function(err, s3res) {
+          if(200 == s3res.statusCode) {
+            var url = "http://me-moji.s3.amazonaws.com/set_" +
+              sessionId + "_" + timestamp + ".png";
+
+            req.session["setUrl"] = url;
+            req.session.save();
+          }
+        });
+    });
+  }
+
+  _.each(photoUrls, function(photoUrl) {
+    var pieces = photoUrl.split("/");
+
+    var filename = pieces[pieces.length-1];
+
+    fs.stat("/tmp/" + filename, function(err, stats) {
+      if(!_.isNull(stats) && !_.isUndefined(stats)) {
+        logger.debug("Found existing file: " + filename);
+        checkFinishedDownload();
+      } else {
+        // download the file.
+        logger.debug("Missing: " + filename);
+
+        var r = request(photoUrl)
+          .pipe(fs.createWriteStream("/tmp/"+filename));
+
+        r.on("close", function() {
+          logger.debug("Downloaded: " + filename);
+          checkFinishedDownload();
+        });
+      }
+    });
+  });
+}
+
+
+function sanitizeSessionId(sessionId) { 
+  return sessionId.replace("/", "").replace("+", "").replace("_", ""); 
+}
+
+var error = function(err) {
+    if(err) {
+      logger.warning(err.stack);
+      process.exit(1);
+    } else {
+      process.exit(0);
+    }
+}
+
+process.on('SIGTERM', error);
+process.on('SIGINT', error);
+process.on('uncaughtException', error);
