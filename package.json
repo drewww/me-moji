@@ -1,6 +1,10 @@
 {
 	"name": "me-moji",
-	"version": "0.1.0-4",
+	"version": "0.1.1",
+	"domains": [
+		"me-moji.com",
+		"www.me-moji.com"
+	],
 	"dependencies": {
 		"commander": "*",
 		"winston": "*",

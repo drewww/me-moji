@@ -90,8 +90,8 @@ $(document).ready(function() {
         console.log("in IE > 8");
       }
     } else {
-//        sndBeep = new Audio("/static/sounds/beep.m4a");
-//        sndShutter = new Audio("/static/sounds/shutter.m4a");
+       sndBeep = new Audio("/static/sounds/beep.m4a");
+       sndShutter = new Audio("/static/sounds/shutter.m4a");
     }
     
     $("#about-button").click(function(event) {
