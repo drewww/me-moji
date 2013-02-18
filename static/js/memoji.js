@@ -496,7 +496,12 @@ function initializeWebcam() {
 		  console.log("debug " + type + "; string");
       if ( string == 'camera-started' ){
           // at this point, turn on the images for overlay.
-          $("#emoji-example").show().animate({opacity:1.0}, 250);
+          $("#emoji-example").show().animate({opacity:1.0}, 250, function() {
+            $("#emoji-example").tooltip('show');
+            $(".tooltip.right").css("top","192px")
+            $(".tooltip.right").css("width","100px")
+          });
+          
           $("#mask").show();
       } else if(string == 'no-camera-detected') {
         console.log("no camera");
@@ -533,7 +538,6 @@ function showPhotobooth() {
     
     $("#gutter").css("position", "relative");
     $("#gutter").css("z-index", "11");
-
     
     photoboothShown = true;
     
@@ -546,12 +550,15 @@ function hidePhotobooth() {
     $("#photobooth").animate({height: "0px"}, 500, "linear", function() {
         $("#photobooth").hide();
     });
-    
+
+    $("#emoji-example").tooltip('hide');
     $("#emoji-example").hide();
     $("#mask").hide();
     
 
     $("#gutter").css("position", "static");
+    
+		
     
     photoboothShown = false;
     updateEmojiPhotosForId(emojiId);
@@ -632,6 +639,7 @@ function setMode(mode) {
 			$("#review").hide();
 			
 			$("#logo, #background").click(dismissClick);
+      
             
 			break;
 		case "COUNTDOWN":
