@@ -369,18 +369,11 @@ li:nth-child(even) {
 
 #review {
     margin-top: 20px;
-    width: 200px;
+    width: 300px;
     margin-left: auto;
     margin-right: auto;
 }
 
-#select, #reject {
-    width: 60px;
-}
-
-#select:hover, #reject:hover {
-    width: 65px;
-}
 
 #select {
   float: right;
@@ -388,11 +381,6 @@ li:nth-child(even) {
 
 #reject {
   float: left;
-}
-
-#select:active, #reject:active {
-    width: 55px;
-    padding-top: 3px;
 }
 
 .clear {
