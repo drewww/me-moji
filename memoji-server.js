@@ -119,12 +119,28 @@ function setupServer() {
     res.render('delete.ejs');
   });
   
-  app.post('/camera', function(req, res) {
-      // var imgData = req.param("image");
-      // var emojiId = req.param("emojiId");
-      logger.info("delete post: " + req.param("pictureId"));
+  app.post('/delete', function(req, res) {
+      if(req.param("password")!=conf["delete-pass"]) {
+        logger.warning("Attempt to delete with wrong pass: " + req.param("password"));
+        res.send(405, "Bad Password"); // UNAUTHORIZED
+        res.end();
+        return;
+      }
       
       // has the form m_On9qH6OdzyMwpNdBPDVII0e_1359678145694_4
+      var filename = req.param("filename");
+      
+      var emojiId = parseInt(filename.split("_")[3]);
+      
+      redis.lrem("emoji:" + emojiId, 1, filename, function(err) {
+        if(err) {
+          logger.warning("error deleting " + filename + ": " + err);
+          res.send(500, "Internal Server Error");
+        } else {
+          logger.info("Deleted picture: " + filename);
+          res.send(200, "Worked!");
+        }
+      });
   });
 
   app.get('/browse/:name', function(req, res) {
