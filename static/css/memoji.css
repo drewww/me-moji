@@ -351,22 +351,10 @@ li:nth-child(even) {
 }
 
 #capture {
-	font-size: 2em;
-	width: 70px;
-	margin-left: auto;
-	margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 	margin-top: 20px;
 }
-
-#capture:hover {
-    width: 75px;
-}
-
-#capture:active {
-    width: 75px;
-    padding-top: 3px;
-}
-
 
 #flash {
 	position:fixed;
