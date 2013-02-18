@@ -69,6 +69,8 @@ $(document).ready(function() {
     
     $(".spinner").hide();
     
+    $("div.notice").hide();
+    
     // on load, check the sessionPhotos list to see if this session has
     // photos we should load in.
     for(var emojiIdIndex in sessionPhotos) {
