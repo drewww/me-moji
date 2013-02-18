@@ -39,7 +39,8 @@ var conf = {"redis":{
     "secret":process.env.AWS_SECRET,
     "bucket":process.env.AWS_BUCKET
   },
-  "session-secret":process.env.MEMOJI_SESSION_SECRET
+  "session-secret":process.env.MEMOJI_SESSION_SECRET,
+  "delete-pass":process.env.DELETE_PASSWORD
   };
   
 logger.debug("CONFIG: " + JSON.stringify(conf));
@@ -112,6 +113,18 @@ function setupServer() {
           "sessionId":sanitizeSessionId(req.session.id),
           "setUrl":req.session.setUrl,
           "photos":JSON.stringify(req.session.photos)}});
+  });
+  
+  app.get("/delete", function(req, res) {
+    res.render('delete.ejs');
+  });
+  
+  app.post('/camera', function(req, res) {
+      // var imgData = req.param("image");
+      // var emojiId = req.param("emojiId");
+      logger.info("delete post: " + req.param("pictureId"));
+      
+      // has the form m_On9qH6OdzyMwpNdBPDVII0e_1359678145694_4
   });
 
   app.get('/browse/:name', function(req, res) {
