@@ -172,7 +172,7 @@ function dismissClick(event) {
 
 function updateEmojiTabSelect() {
     $(".emoji").removeClass("select");
-    $("#gutter").children().each(function() {
+    $("#gutter img").each(function() {
         if($(this).attr("src").indexOf("/"+emojiId+".png")!=-1) {
             $(this).addClass("select");
         }
