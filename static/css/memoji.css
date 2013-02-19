@@ -54,6 +54,10 @@ body {
     opacity: 0.3;
 }
 
+#session-photos .emoji {
+  margin-top: 44px;
+}
+
 .emoji img {
     width: 100%;
     height: 100%;
