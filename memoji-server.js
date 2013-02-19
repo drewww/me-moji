@@ -132,12 +132,14 @@ function setupServer() {
       
       var emojiId = parseInt(filename.split("_")[3]);
       
-      redis.lrem("emoji:" + emojiId, 1, filename, function(err) {
+      filename = filename + ".png";
+      
+      redis.lrem("emoji:" + emojiId, 1, filename, function(err, result) {
         if(err) {
           logger.warning("error deleting " + filename + ": " + err);
           res.send(500, "Internal Server Error");
         } else {
-          logger.info("Deleted picture: " + filename);
+          logger.info("Deleted picture: " + filename + "; result: " + result);
           res.send(200, "Worked!");
         }
       });
