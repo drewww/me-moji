@@ -203,8 +203,8 @@ body {
     
     z-index: 15;
     
-    width: 350px;
-    height: 545px;
+    width: 400px;
+    height: 445px;
     
     top: 50%;
     left: 50%;
@@ -215,6 +215,9 @@ body {
     box-shadow: 3px 3px 3px black;
     
     border: 1px solid #aaa;
+    
+    background-color: white;
+    padding: 10px;
 }
 
 #about img {
@@ -224,6 +227,20 @@ body {
 #about a {
     border: 0px;
 }
+
+#about h1 {
+  font-size: 36px;
+  font-variant: small-caps;
+}
+
+#about h2 {
+  font-size: 18px;
+}
+
+#about p {
+  font-size: 14px;
+}
+
 
 #focus {
     position: fixed;
