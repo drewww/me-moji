@@ -225,8 +225,8 @@ function setupServer() {
       var emojiId = req.param("emojiId");
       var timestamp = Date.now();
 
-      logger.debug("Received camera post!");
-
+      logger.debug("Received camera post for session: " + req.session.id);
+      
       // session ids apparently can have '/' characters in them? annoying.
       // not sure what other evils they might hold.
       var safeId = sanitizeSessionId(req.session.id);
@@ -300,6 +300,9 @@ function setupServer() {
 
                                 req.session.photos[emojiId] = fullPath;
 
+                                logger.info("processed photo for: " + req.session.id + " ("+_.filter(req.session.photos, function(photo) { return !_.isNull(photo)}).length+"): " + JSON.stringify(req.session.photos));
+
+
                                 // check if all the emojiId have a path.
                                 // we can't just look at lenght because if
                                 // you have just the last emojiId, it inserts
@@ -336,14 +339,14 @@ function setupServer() {
 
 
 function sessionInit(req) {
-    // logger.info("req.session: " + JSON.stringify(req.session));
     
-    logger.info("session photos: " + _.filter(req.session.photos, function(photo) { return !_.isNull(photo)}).length);
+    logger.info("GET from " + req.session.id + " ("+_.filter(req.session.photos, function(photo) { return !_.isNull(photo)}).length+" photos taken)");
     
     req.session.cookie.expires = false;
     req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
 
     if(typeof req.session.photos == "undefined") {
+        logger.info("New session initialized: " + req.session.id);
         req.session.photos = [];
     } else if(typeof req.session.setUrl == "undefined") {
       logger.info("setting setUrl to ''");
