@@ -598,9 +598,25 @@ function upload(image) {
 }
 
 function addPhotoToSessionGutter(url, emojiIdForUrl) {
+    // this is a weird kiosk-mode exception. we don't want to accumulate
+    // session photos if we're on a kiosk-mode instance of memoji.
+    // shutting down cookies helps: then the server views every request
+    // as being from a new session. the trick is, the client doesn't
+    // realize that, and tries to maintain an accurate sessionPhotos
+    // record. to get around that, we'll look at document.cookie and
+    // if it's empty, assume we're in a no-cookie environment and we 
+    // shouldn't update sessionPhotos. 
+    // HOWEVER it's okay to put them in the gutter, because that looks
+    // sort of cool. Just don't try to make a contact sheet out of it
+    // at the end.
+    
     console.log("emojiIdForUrl: " + emojiIdForUrl);
-    // keep that list up to date.
-    sessionPhotos[emojiIdForUrl] = url;
+    if(document.cookie.length==0) {
+      console.log("post on a no-cookie machine; ignore");
+    } else {
+      // keep that list up to date.
+      sessionPhotos[emojiIdForUrl] = url;
+    }
     
     var slotClass = "slot" + (emojiIdForUrl-1);
     
