@@ -340,7 +340,11 @@ function setupServer() {
 
 function sessionInit(req) {
     
-    logger.info("GET from " + req.session.id + " ("+_.filter(req.session.photos, function(photo) { return !_.isNull(photo)}).length+" photos taken)");
+    if(_.isUndefined(req.session)) {
+      logger.info("session undefined");
+    } else {
+      logger.info("GET from " + req.session.id + " ("+_.filter(req.session.photos, function(photo) { return !_.isNull(photo)}).length+" photos taken)");
+    }
     
     req.session.cookie.expires = false;
     req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
