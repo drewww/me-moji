@@ -23,6 +23,23 @@ var emojiNames = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
 
 
 $(document).ready(function() {
+    // setup idle reloading if there's no cookie present, ie in kiosk
+    // mode.
+    if(document.cookie.length==0) {
+      var time = new Date().getTime();
+      $(document.body).bind("mousemove keypress", function(e) {
+        time = new Date().getTime();
+      });
+
+      function refresh() {
+        if(new Date().getTime() - time >= 60000*10) 
+        window.location.reload(true);
+        else 
+        setTimeout(refresh, 30000);
+      }
+
+      setTimeout(refresh, 30000);
+    }
     
     curUrl = document.URL;
     
