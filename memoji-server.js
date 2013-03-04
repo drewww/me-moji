@@ -80,26 +80,44 @@ if(program.port) {
 
 var started = false;
 
-
+var errorCount = 0;
+var redisDown = false;
 redis.on("ready", function() {
   if(!started) setupServer();
+  errorCount = 0;
 })
+
+redis.on("error", function() {
+  errorCount++;
+  logger.error("error connecting to redis");
+  
+  if(errorCount > 5) {
+    redisDown = true;
+    redis.end();
+  }
+});
 
 function setupServer() {
   
   var app = express();
 
   app.configure(function() {
-
+    
+    // if(!redisDown) {
     var redisSessionStore = new RedisStore({client:redis});
-
+    // }
+    
     app.use(express.cookieParser());
     app.use(express.bodyParser());
     app.use(express.errorHandler({ dumpExceptions: true }));
     app.use("/static", express.static(__dirname + '/static'));
     app.use(express.favicon(__dirname + '/static/img/favicon.ico', { maxAge: 2592000000 }));
+    
+    // if(!redisDown) {
     app.use(express.session({secret:conf["session-secret"],
           store:redisSessionStore, cookie:{maxAge: 1000*60*60*24*365}}));
+    // }
+    
     logger.info("CONFIGURED SERVER");
   });
 
@@ -208,7 +226,11 @@ function setupServer() {
       sessionInit(req);
 
       var emojiId = parseInt(req.params.id);
-
+      
+      // if(redisDown) {
+      //   res.send(JSON.stringify({}));
+      // }
+      
       // fetch it off redis
       redis.lrange("emoji:" + emojiId, 0, -1, function(err, filenames) {
           var fullUrls = _.map(filenames, function(filename)
@@ -233,6 +255,12 @@ function setupServer() {
 
       var filename = safeId + "_" + timestamp + "_" + emojiId + ".png";
       var buf = new Buffer(imgData.match(/,(.+)/)[1],'base64');
+
+      // if(redisDown) {
+      //   res.send(JSON.stringify({}));
+      //   res.end()
+      // }
+      
 
       // okay, first we're going to write this to a temp file and then
       // run it through identify to make sure it meets our basic criteria.
