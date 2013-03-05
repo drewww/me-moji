@@ -39,6 +39,10 @@ $(document).ready(function() {
       }
 
       setTimeout(refresh, 30000);
+      
+      // also on kiosk, disable the links in the about page so people can't
+      // sneak out of the kiosk mode onto other websites.
+      $("#about a").contents().unwrap();
     }
     
     curUrl = document.URL;
