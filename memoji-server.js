@@ -3,8 +3,7 @@ var express = require('express'),
     fs = require('fs'),
     _ = require('underscore')._,
     winston = require('winston'),
-    // redis_iris_lib = require('iris-redis'),
-    redis_lib = require('iris-redis'),
+    redis_lib = require('redis'),
     knox = require('knox'),
     RedisStore = require('connect-redis')(express),
     http = require('http'),
@@ -31,7 +30,6 @@ var conf = {"redis":{
   "host":process.env.REDIS_SERVER,
   "port":parseInt(process.env.REDIS_PORT),
   "auth":process.env.REDIS_AUTH,
-  "iris":process.env.REDIS_IRIS!="false"
   },
   
   "aws":{
@@ -51,12 +49,14 @@ var redis;
 
 logger.info("REDIS host: " + conf.redis.host + ":" + conf.redis.port + " (auth: " + conf.redis.auth +")");
 
-if(conf.redis.iris) {
-  redis = redis_lib.createClient(conf.redis.port, conf.redis.host, {auth:conf.redis.auth});
-} else {
-  redis = redis_lib.createClient(conf.redis.port, conf.redis.host, {auth:"null"});
-}
+redis = redis_lib.createClient(conf.redis.port, conf.redis.host);
 
+if(conf.redis.auth!="false") {
+  console.log("authorizing");
+  redis.auth(conf.redis.auth, function() {
+    console.log("auth completed");
+  });
+}
 
 program.version(0.1)
     .option('-p, --port [num]', "Set the port.")
@@ -80,21 +80,12 @@ if(program.port) {
 
 var started = false;
 
-var errorCount = 0;
-var redisDown = false;
 redis.on("ready", function() {
-  if(!started) setupServer();
-  errorCount = 0;
+  setTimeout(setupServer, 2000);
 })
 
-redis.on("error", function() {
-  errorCount++;
-  logger.error("error connecting to redis");
-  
-  if(errorCount > 5) {
-    redisDown = true;
-    redis.end();
-  }
+redis.on("error", function(err) {
+  logger.error("error connecting to redis: " + err);
 });
 
 function setupServer() {
