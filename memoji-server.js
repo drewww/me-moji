@@ -123,6 +123,10 @@ function setupServer() {
           "setUrl":req.session.setUrl,
           "photos":JSON.stringify(req.session.photos)}});
   });
+
+  app.get('/projection', function(req, res) {
+    res.render('projection.ejs', {});
+  });
   
   app.get("/delete", function(req, res) {
     res.render('delete.ejs');
