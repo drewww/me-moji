@@ -52,9 +52,9 @@ logger.info("REDIS host: " + conf.redis.host + ":" + conf.redis.port + " (auth: 
 redis = redis_lib.createClient(conf.redis.port, conf.redis.host);
 
 if(conf.redis.auth!="false") {
-  console.log("authorizing");
+  logger.debug("authorizing redis...")
   redis.auth(conf.redis.auth, function() {
-    console.log("auth completed");
+    logger.debug("redis authorized");
   });
 }
 
@@ -93,23 +93,23 @@ function setupServer() {
   var app = express();
 
   app.configure(function() {
+    logger.debug("running configure");
     
     // if(!redisDown) {
     var redisSessionStore = new RedisStore({client:redis});
     // }
-    
+        
     app.use(express.cookieParser());
-    app.use(express.bodyParser());
+    app.use(express.urlencoded());
+    app.use(express.json());
     app.use(express.errorHandler({ dumpExceptions: true }));
     app.use("/static", express.static(__dirname + '/static'));
     app.use(express.favicon(__dirname + '/static/img/favicon.ico', { maxAge: 2592000000 }));
     
-    // if(!redisDown) {
+    logger.debug("about to add session store");
     app.use(express.session({secret:conf["session-secret"],
           store:redisSessionStore, cookie:{maxAge: 1000*60*60*24*365}}));
-    // }
-    
-    logger.info("CONFIGURED SERVER");
+    logger.debug("CONFIGURED SERVER");    
   });
 
 
