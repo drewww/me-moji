@@ -40,8 +40,12 @@
 						console.log("done loading");
 
 						_.each(photos, function(value, key) {
-							$("#container").append($("<div class='face'><img src='"+value[0]+"'></div>"));
+							var randomIndex = Math.floor(Math.random()*value.length);
+
+							$("#container").append($("<div class='face'><img src='"+value[randomIndex]+"'><img class='emoji' src='/static/img/emoji/"+facesIndex[key]+".png'></div>"));
 						});
+
+						$("#container").append($("<br class='clear'>"))
 					}
     			});
     		});
@@ -52,6 +56,31 @@
 	<link rel="stylesheet" href="/static/js/lib/bootstrap/css/bootstrap.min.css" type="text/css" media="screen" charset="utf-8">
 	<link href='http://fonts.googleapis.com/css?family=Roboto:700' rel='stylesheet' type='text/css'>
 
+	<style type="text/css">
+
+	#container {
+		padding: 50px;
+	}
+
+	.face {
+		float: left;
+		width: 200px;
+		margin-right: 30px;
+		position: relative;
+		margin-bottom: 20px;
+	}
+
+	.emoji {
+		position: absolute;
+		right: 0px;
+		bottom: -10px;
+		opacity: 1.0;
+	}
+
+	br.clear {
+		clear: both;
+	}
+	</style>
 </head>
 <body id="index" onload="">
 <div id="container">
