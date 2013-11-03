@@ -7,7 +7,6 @@
 	</script>
 	<script type="text/javascript" src="/static/js/lib/bootstrap/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
-	<script type="text/javascript" src="/static/js/memoji.js"></script>
 	
 	<script type="text/javascript" charset="utf-8">		
 		/* Deal with IE not having console.log */
@@ -15,6 +14,38 @@
 	     console = {};
 	     console.log = function() {};
 	   }
+
+	   // from the server, prepopulate all the pieces we're going to need
+	   var photos = {};
+
+	   $(document).ready(function() {
+	   // 		var faces = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
+    // "relieved", "grin", "tongue", "unamused", "smirk", "pensive",
+    // "confounded", "crying", "tears", "astonished", "scream", "pout", "cat"];
+
+    		var facesIndex = {"smile":1, "wink":3, "hearts":4, "kiss":5, "flushed":6, "relieved":7, "grin":8, "tongue":9, "crying":14, "scream":17, "pout":18};
+
+    		// launch requests to get photos for all of these.
+    		_.each(facesIndex, function(value, key) {
+    			$.ajax({
+    				method: "GET",
+    				dataType: "json",
+    				url: "/photos/" + value
+    			}).done(function(data) {
+    				photos[key] = data;
+    				// console.log("got photos for " + key + " : " + JSON.stringify(data));
+
+    				console.log("photos.length: " + Object.keys(photos).length);
+					if(Object.keys(photos).length==11) {
+						console.log("done loading");
+
+						_.each(photos, function(value, key) {
+							$("#container").append($("<div class='face'><img src='"+value[0]+"'></div>"));
+						});
+					}
+    			});
+    		});
+	   	});
 	</script>
 	
 	<link rel="stylesheet" href="/static/css/memoji.css" type="text/css" media="screen" charset="utf-8">
@@ -24,6 +55,8 @@
 </head>
 <body id="index" onload="">
 <div id="container">
+
+
 </div>
 
 </body>
