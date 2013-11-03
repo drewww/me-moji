@@ -18,6 +18,12 @@
 	   // from the server, prepopulate all the pieces we're going to need
 	   var photos = {};
 
+	   _.templateSettings = {
+  			interpolate: /\{\{(.+?)\}\}/g
+		};
+
+	   var contents = _.template("<div class='front'><img class='face' src='{{faceUrl}}'></div><div class='back'></div><img class='emoji' src='/static/img/emoji/{{emojiId}}.png'>");
+
 	   $(document).ready(function() {
 	   // 		var faces = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
     // "relieved", "grin", "tongue", "unamused", "smirk", "pensive",
@@ -42,10 +48,30 @@
 						_.each(photos, function(value, key) {
 							var randomIndex = Math.floor(Math.random()*value.length);
 
-							$("#container").append($("<div class='face'><img src='"+value[randomIndex]+"'><img class='emoji' src='/static/img/emoji/"+facesIndex[key]+".png'></div>"));
+							var newPictureEl = $("<div id='picture-"+facesIndex[key]+"' class='face-container'></div>");
+
+							newPictureEl.append(contents({faceUrl:value[randomIndex], emojiId:facesIndex[key]}));
+
+							$("#container").append(newPictureEl);
 						});
 
-						$("#container").append($("<br class='clear'>"))
+						$("#container").append($("<br class='clear'>"));
+
+
+						setInterval(function() {
+							console.log("updating!");
+							// pick a random image, and replace it. 
+							var randomIndex = Math.floor(Math.random()*Object.keys(photos).length);
+
+							var keyToUpdate = Object.keys(photos)[randomIndex];
+							var entryToUpdate = photos[keyToUpdate];
+
+							var el = $("#picture-" + facesIndex[keyToUpdate]);
+
+							var randomPictureIndex = Math.floor(Math.random()*entryToUpdate.length);
+							el.empty();
+							el.append(contents({emojiId: facesIndex[keyToUpdate], faceUrl:entryToUpdate[randomPictureIndex]}));
+						}, 1000);
 					}
     			});
     		});
@@ -62,12 +88,17 @@
 		padding: 50px;
 	}
 
-	.face {
+	.face-container {
 		float: left;
 		width: 200px;
 		margin-right: 30px;
 		position: relative;
 		margin-bottom: 20px;
+	}
+
+	.face {
+		width: 200px;
+		height: 200px;
 	}
 
 	.emoji {
