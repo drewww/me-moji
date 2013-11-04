@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>me-moji</title>
+	<script type="text/javascript" charset="utf-8" src="/static/js/lib/jquery-1.7.2.min.js">
+	</script>
+	<script type="text/javascript" src="/static/js/lib/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
+	
+	<script type="text/javascript" charset="utf-8">		
+		/* Deal with IE not having console.log */
+	    if (typeof console === "undefined" || typeof console.log === "undefined") {
+	     console = {};
+	     console.log = function() {};
+	   }
+
+	   // from the server, prepopulate all the pieces we're going to need
+	   var photos = {};
+
+	   _.templateSettings = {
+  			interpolate: /\{\{(.+?)\}\}/g
+		};
+
+	   var contents = _.template("<div class='card front'><img class='face' src='{{faceUrl}}'></div><div class='card back'></div><img class='emoji' src='/static/img/emoji/{{emojiId}}.png'>");
+
+
+		var facesIndex = {"smile":1, "wink":3, "hearts":4, "kiss":5, "flushed":6, "relieved":7, "grin":8, "tongue":9, "crying":14, "scream":17, "pout":18};
+
+	   function updateRandom() {
+			console.log("updating!");
+			// pick a random image, and replace it. 
+			var randomIndex = Math.floor(Math.random()*Object.keys(photos).length);
+
+			var keyToUpdate = Object.keys(photos)[randomIndex];
+			var entryToUpdate = photos[keyToUpdate];
+
+			var el = $("#picture-" + facesIndex[keyToUpdate]);
+
+			var randomPictureIndex = Math.floor(Math.random()*entryToUpdate.length);
+
+			var backDiv = el.find(".back");
+			var frontDiv = el.find(".front");
+
+			backDiv.empty()
+			backDiv.append($("<img class='face' src='"+entryToUpdate[randomPictureIndex]+"'>"));
+
+			backDiv.removeClass("back").addClass("front");
+			frontDiv.removeClass("front").addClass("back");
+
+	   }
+
+	   $(document).ready(function() {
+    		// launch requests to get photos for all of these.
+    		_.each(facesIndex, function(value, key) {
+    			$.ajax({
+    				method: "GET",
+    				dataType: "json",
+    				url: "/photos/" + value
+    			}).done(function(data) {
+    				photos[key] = data;
+    				// console.log("got photos for " + key + " : " + JSON.stringify(data));
+
+    				console.log("photos.length: " + Object.keys(photos).length);
+					if(Object.keys(photos).length==11) {
+						console.log("done loading");
+
+						var index = 0;
+						_.each(photos, function(value, key) {
+							var randomIndex = Math.floor(Math.random()*value.length);
+
+							var newPictureEl = $("<div id='picture-"+facesIndex[key]+"' class='face-container'></div>");
+
+							newPictureEl.append(contents({faceUrl:value[randomIndex], emojiId:facesIndex[key]}));
+
+							$("#container").append(newPictureEl);
+
+							if(index==4) {
+								newPictureEl.addClass("offset");
+							}
+
+							index++;
+						});
+
+						$("#container").append($("<br class='clear'>"));
+
+						setInterval(updateRandom, 3000);
+					}
+    			});
+    		});
+	   	});
+	</script>
+	
+	<link rel="stylesheet" href="/static/css/memoji.css" type="text/css" media="screen" charset="utf-8">
+	<link rel="stylesheet" href="/static/js/lib/bootstrap/css/bootstrap.min.css" type="text/css" media="screen" charset="utf-8">
+	<link href='http://fonts.googleapis.com/css?family=Roboto:700' rel='stylesheet' type='text/css'>
+
+	<style type="text/css">
+
+	#container {
+		padding: 50px;
+	}
+
+	.offset {
+		margin-left: 100px;
+	}
+
+	.face-container {
+		float: left;
+		width: 200px;
+		margin-right: 30px;
+		position: relative;
+		margin-bottom: 20px;
+		height: 200px;
+
+	  -webkit-transform-style: preserve-3d;
+	  -webkit-transition: all 1.0s linear;
+	  		-webkit-perspective: 1000;
+
+	}
+
+	.face {
+		width: 200px;
+		height: 200px;
+	}
+
+	.emoji {
+		position: absolute;
+		right: 0px;
+		bottom: -10px;
+		opacity: 1.0;
+	}
+
+	.card {
+		-webkit-backface-visibility: hidden;
+
+		-webkit-transform-style: preserve-3d;
+		-webkit-transition: all 1.0s linear;
+
+		position: absolute;
+		top: 0px;
+		left: 0px;
+	}
+
+	.card.front {
+		-webkit-transform: rotateY(0deg);
+	}
+
+	.card.back {
+	  display: block;
+	  -webkit-transform: rotateY(180deg);
+	  box-sizing: border-box;
+	}
+
+	br.clear {
+		clear: both;
+	}
+	</style>
+</head>
+<body id="index" onload="">
+<div id="container">
+
+
+</div>
+
+</body>
+</html>
