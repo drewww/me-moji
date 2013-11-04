@@ -22,14 +22,34 @@
   			interpolate: /\{\{(.+?)\}\}/g
 		};
 
-	   var contents = _.template("<div class='front'><img class='face' src='{{faceUrl}}'></div><div class='back'></div><img class='emoji' src='/static/img/emoji/{{emojiId}}.png'>");
+	   var contents = _.template("<div class='card front'><img class='face' src='{{faceUrl}}'></div><div class='card back'></div><img class='emoji' src='/static/img/emoji/{{emojiId}}.png'>");
+
+
+		var facesIndex = {"smile":1, "wink":3, "hearts":4, "kiss":5, "flushed":6, "relieved":7, "grin":8, "tongue":9, "crying":14, "scream":17, "pout":18};
+
+	   function updateRandom() {
+			console.log("updating!");
+			// pick a random image, and replace it. 
+			var randomIndex = Math.floor(Math.random()*Object.keys(photos).length);
+
+			var keyToUpdate = Object.keys(photos)[randomIndex];
+			var entryToUpdate = photos[keyToUpdate];
+
+			var el = $("#picture-" + facesIndex[keyToUpdate]);
+
+			var randomPictureIndex = Math.floor(Math.random()*entryToUpdate.length);
+
+			el.find(".back").empty()
+			el.find(".back").append($("<img class='face' src='"+entryToUpdate[randomPictureIndex]+"'>"));
+
+			el.find(".front").addClass("flip");
+			el.find(".back").addClass("unflip");
+	   }
 
 	   $(document).ready(function() {
 	   // 		var faces = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
     // "relieved", "grin", "tongue", "unamused", "smirk", "pensive",
     // "confounded", "crying", "tears", "astonished", "scream", "pout", "cat"];
-
-    		var facesIndex = {"smile":1, "wink":3, "hearts":4, "kiss":5, "flushed":6, "relieved":7, "grin":8, "tongue":9, "crying":14, "scream":17, "pout":18};
 
     		// launch requests to get photos for all of these.
     		_.each(facesIndex, function(value, key) {
@@ -63,22 +83,6 @@
 						});
 
 						$("#container").append($("<br class='clear'>"));
-
-
-						setInterval(function() {
-							console.log("updating!");
-							// pick a random image, and replace it. 
-							var randomIndex = Math.floor(Math.random()*Object.keys(photos).length);
-
-							var keyToUpdate = Object.keys(photos)[randomIndex];
-							var entryToUpdate = photos[keyToUpdate];
-
-							var el = $("#picture-" + facesIndex[keyToUpdate]);
-
-							var randomPictureIndex = Math.floor(Math.random()*entryToUpdate.length);
-							el.empty();
-							el.append(contents({emojiId: facesIndex[keyToUpdate], faceUrl:entryToUpdate[randomPictureIndex]}));
-						}, 4000);
 					}
     			});
     		});
@@ -93,6 +97,8 @@
 
 	#container {
 		padding: 50px;
+
+		-webkit-perspective: 1000;
 	}
 
 	.offset {
@@ -105,6 +111,10 @@
 		margin-right: 30px;
 		position: relative;
 		margin-bottom: 20px;
+		height: 200px;
+
+	  -webkit-transform-style: preserve-3d;
+	  -webkit-transition: all 1.0s linear;
 	}
 
 	.face {
@@ -117,6 +127,31 @@
 		right: 0px;
 		bottom: -10px;
 		opacity: 1.0;
+	}
+
+	.card {
+	  -webkit-backface-visibility: hidden;
+
+	  -webkit-transform-style: preserve-3d;
+	  -webkit-transition: all 1.0s linear;
+
+	  	position: absolute;
+		top: 0px;
+		left: 0px;
+	}
+
+	.flip {
+		-webkit-transform: rotateY(180deg);
+	}
+
+	.unflip {
+		-webkit-transform: rotateY(0deg) !important;
+	}
+
+	.card.back {
+	  display: block;
+	  -webkit-transform: rotateY(180deg);
+	  box-sizing: border-box;
 	}
 
 	br.clear {
