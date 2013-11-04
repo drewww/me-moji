@@ -1,6 +1,6 @@
 {
 	"name": "me-moji",
-	"version": "0.1.13",
+	"version": "0.1.14",
 	"domains": [
 		"me-moji.com",
 		"www.me-moji.com"
@@ -12,7 +12,6 @@
 		"underscore": "*",
 		"ejs": "*",
 		"knox": "*",
-		"iris-redis": "*",
 		"redis": "*",
 		"connect-redis": "*",
 		"connect": "*",
@@ -23,6 +22,6 @@
 		"start": "node memoji-server.js"
 	},
 	"engines": {
-		"node": "0.8.x"
+		"node": "0.10.x"
 	}
 }
