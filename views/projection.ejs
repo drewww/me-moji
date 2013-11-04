@@ -39,18 +39,18 @@
 
 			var randomPictureIndex = Math.floor(Math.random()*entryToUpdate.length);
 
-			el.find(".back").empty()
-			el.find(".back").append($("<img class='face' src='"+entryToUpdate[randomPictureIndex]+"'>"));
+			var backDiv = el.find(".back");
+			var frontDiv = el.find(".front");
 
-			el.find(".front").addClass("flip");
-			el.find(".back").addClass("unflip");
+			backDiv.empty()
+			backDiv.append($("<img class='face' src='"+entryToUpdate[randomPictureIndex]+"'>"));
+
+			backDiv.removeClass("back").addClass("front");
+			frontDiv.removeClass("front").addClass("back");
+
 	   }
 
 	   $(document).ready(function() {
-	   // 		var faces = ["none", "smile", "blush", "wink", "hearts", "kiss", "flushed",
-    // "relieved", "grin", "tongue", "unamused", "smirk", "pensive",
-    // "confounded", "crying", "tears", "astonished", "scream", "pout", "cat"];
-
     		// launch requests to get photos for all of these.
     		_.each(facesIndex, function(value, key) {
     			$.ajax({
@@ -83,6 +83,8 @@
 						});
 
 						$("#container").append($("<br class='clear'>"));
+
+						setInterval(updateRandom, 3000);
 					}
     			});
     		});
@@ -97,8 +99,6 @@
 
 	#container {
 		padding: 50px;
-
-		-webkit-perspective: 1000;
 	}
 
 	.offset {
@@ -115,6 +115,8 @@
 
 	  -webkit-transform-style: preserve-3d;
 	  -webkit-transition: all 1.0s linear;
+	  		-webkit-perspective: 1000;
+
 	}
 
 	.face {
@@ -130,22 +132,18 @@
 	}
 
 	.card {
-	  -webkit-backface-visibility: hidden;
+		-webkit-backface-visibility: hidden;
 
-	  -webkit-transform-style: preserve-3d;
-	  -webkit-transition: all 1.0s linear;
+		-webkit-transform-style: preserve-3d;
+		-webkit-transition: all 1.0s linear;
 
-	  	position: absolute;
+		position: absolute;
 		top: 0px;
 		left: 0px;
 	}
 
-	.flip {
-		-webkit-transform: rotateY(180deg);
-	}
-
-	.unflip {
-		-webkit-transform: rotateY(0deg) !important;
+	.card.front {
+		-webkit-transform: rotateY(0deg);
 	}
 
 	.card.back {
