@@ -81,7 +81,9 @@ if(program.port) {
 var started = false;
 
 redis.on("ready", function() {
-  setTimeout(setupServer, 2000);
+  if(!started) {
+    setTimeout(setupServer, 500);
+  }
 })
 
 redis.on("error", function(err) {
