@@ -45,6 +45,7 @@
 					if(Object.keys(photos).length==11) {
 						console.log("done loading");
 
+						var index = 0;
 						_.each(photos, function(value, key) {
 							var randomIndex = Math.floor(Math.random()*value.length);
 
@@ -53,6 +54,12 @@
 							newPictureEl.append(contents({faceUrl:value[randomIndex], emojiId:facesIndex[key]}));
 
 							$("#container").append(newPictureEl);
+
+							if(index==4) {
+								newPictureEl.addClass("offset");
+							}
+
+							index++;
 						});
 
 						$("#container").append($("<br class='clear'>"));
@@ -71,7 +78,7 @@
 							var randomPictureIndex = Math.floor(Math.random()*entryToUpdate.length);
 							el.empty();
 							el.append(contents({emojiId: facesIndex[keyToUpdate], faceUrl:entryToUpdate[randomPictureIndex]}));
-						}, 1000);
+						}, 4000);
 					}
     			});
     		});
@@ -86,6 +93,10 @@
 
 	#container {
 		padding: 50px;
+	}
+
+	.offset {
+		margin-left: 100px;
 	}
 
 	.face-container {
